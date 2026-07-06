@@ -1,0 +1,1194 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ╔════════════════════════════════════════════════════════════╗
+   ║  INTELLIGENCE BUREAU — AAA GAME UI DESIGN SYSTEM          ║
+   ║  Future Detective Platform · Classified Level 5           ║
+   ╚════════════════════════════════════════════════════════════╝ */
+
+@layer base {
+  html, body {
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  body {
+    @apply antialiased;
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    background-color: #0B0F14;
+    color: #FFFFFF;
+    cursor: default;
+  }
+  ::selection {
+    background: rgba(0, 245, 255, 0.2);
+    color: #fff;
+  }
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+
+  /* ══════════════════════════════════════════════════════
+     §1  HUD PANEL SYSTEM — Glass + Angular + Cyberpunk
+  ══════════════════════════════════════════════════════ */
+
+  .hud-panel {
+    @apply relative overflow-hidden;
+    border-radius: 3px;
+    background: linear-gradient(165deg, rgba(10, 18, 32, 0.82) 0%, rgba(6, 10, 18, 0.92) 100%);
+    backdrop-filter: blur(20px) saturate(1.3);
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.12),
+      0 8px 40px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 0 30px rgba(0, 245, 255, 0.02);
+  }
+  .hud-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to right, rgba(0,245,255,0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,245,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.35;
+    z-index: 0;
+  }
+  .hud-panel-solid {
+    background: linear-gradient(165deg, rgba(8, 14, 26, 0.97) 0%, rgba(4, 7, 12, 0.99) 100%);
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.09),
+      0 16px 48px rgba(0, 0, 0, 0.65),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+  .hud-panel-hover {
+    @apply hud-panel transition-all duration-300;
+  }
+  .hud-panel-hover:hover {
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.3),
+      0 12px 48px rgba(0, 0, 0, 0.6),
+      0 0 60px rgba(34, 211, 238, 0.08),
+      inset 0 0 30px rgba(0, 245, 255, 0.03);
+    transform: translateY(-2px);
+  }
+  .hud-panel-inner { @apply relative z-[1]; }
+
+  /* HUD 扫描光条 */
+  .hud-scan-sweep {
+    @apply absolute inset-0 pointer-events-none overflow-hidden z-[3];
+  }
+  .hud-scan-sweep::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.7), transparent);
+    animation: shimmer-sweep 4s ease-in-out infinite;
+  }
+
+  /* HUD 角落括号 */
+  .hud-corners {
+    @apply absolute inset-0 pointer-events-none;
+  }
+  .hud-corners::before,
+  .hud-corners::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+  }
+  .hud-corners::before {
+    top: 0; left: 0;
+    border-top: 1px solid rgba(0, 245, 255, 0.6);
+    border-left: 1px solid rgba(0, 245, 255, 0.6);
+  }
+  .hud-corners::after {
+    bottom: 0; right: 0;
+    border-bottom: 1px solid rgba(0, 245, 255, 0.6);
+    border-right: 1px solid rgba(0, 245, 255, 0.6);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §2  TYPOGRAPHY SYSTEM — P5 / Cyberpunk / Military
+  ══════════════════════════════════════════════════════ */
+
+  .hud-label {
+    @apply font-mono text-[10px] font-semibold tracking-[0.25em] uppercase;
+    color: rgba(0, 245, 255, 0.6);
+  }
+  .hud-label::before {
+    content: '// ';
+    color: rgba(0, 245, 255, 0.3);
+  }
+
+  .hud-label-red {
+    @apply hud-label;
+    color: rgba(229, 9, 20, 0.7);
+  }
+  .hud-label-red::before { color: rgba(229, 9, 20, 0.35); }
+
+  .hud-title {
+    @apply font-display font-black tracking-tight;
+    color: #f0f6ff;
+    text-shadow: 0 0 40px rgba(0, 245, 255, 0.25), 0 2px 4px rgba(0, 0, 0, 0.6);
+  }
+  .hud-title-accent {
+    color: #00F5FF;
+    text-shadow: 0 0 30px rgba(0, 245, 255, 0.6), 0 0 60px rgba(0, 245, 255, 0.3);
+  }
+  .hud-title-red {
+    color: #E50914;
+    text-shadow: 0 0 30px rgba(229, 9, 20, 0.65), 0 0 60px rgba(229, 9, 20, 0.3);
+  }
+
+  .hud-divider {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.35) 30%, rgba(220, 38, 38, 0.25) 70%, transparent);
+  }
+  .hud-divider-red {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.5) 50%, transparent);
+  }
+
+  .hud-meta {
+    @apply font-mono text-xs tracking-wider;
+    color: rgba(148, 163, 184, 0.7);
+  }
+
+  /* Persona 5 斜切标题 */
+  .p5-title-wrap {
+    @apply inline-block;
+    transform: skewX(-6deg);
+  }
+  .p5-title {
+    @apply inline-block font-display font-black tracking-tight text-white uppercase;
+    transform: skewX(6deg);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    letter-spacing: 0.04em;
+    text-shadow:
+      0 0 40px rgba(0, 245, 255, 0.2),
+      0 4px 0 rgba(229, 9, 20, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+  .p5-title-red {
+    color: #E50914;
+    text-shadow:
+      0 0 40px rgba(229, 9, 20, 0.6),
+      0 0 80px rgba(229, 9, 20, 0.3),
+      0 4px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  /* 大号斜切标题 — 游戏 UI 级别 */
+  .game-title {
+    @apply font-display font-black uppercase;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    letter-spacing: 0.06em;
+    transform: skewX(-4deg);
+    display: inline-block;
+    text-shadow:
+      0 0 60px rgba(0, 245, 255, 0.3),
+      0 0 120px rgba(0, 245, 255, 0.15),
+      0 8px 0 rgba(229, 9, 20, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.9);
+    -webkit-text-stroke: 0.5px rgba(0, 245, 255, 0.3);
+  }
+  .game-title-inner {
+    display: inline-block;
+    transform: skewX(4deg);
+  }
+  .game-title-red {
+    color: #E50914;
+    text-shadow:
+      0 0 60px rgba(229, 9, 20, 0.7),
+      0 0 120px rgba(229, 9, 20, 0.4),
+      0 8px 0 rgba(0, 0, 0, 0.5),
+      0 4px 8px rgba(0, 0, 0, 0.9);
+    -webkit-text-stroke: 0.5px rgba(229, 9, 20, 0.5);
+  }
+
+  /* 排名大字 — Persona 5 */
+  .rank-display {
+    @apply relative font-black leading-none;
+    font-size: clamp(4rem, 15vw, 7rem);
+    font-family: 'Orbitron', sans-serif;
+    color: #E50914;
+    text-shadow:
+      0 0 60px rgba(229, 9, 20, 0.7),
+      0 0 120px rgba(229, 9, 20, 0.35),
+      0 8px 0 rgba(0, 0, 0, 0.6);
+    transform: skewX(-8deg);
+    -webkit-text-stroke: 1px rgba(229, 9, 20, 0.4);
+  }
+  .rank-display-inner {
+    display: inline-block;
+    transform: skewX(8deg);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §3  BUTTON SYSTEM — Mechanical + HUD Style
+  ══════════════════════════════════════════════════════ */
+
+  .hud-btn {
+    @apply relative inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 overflow-hidden cursor-pointer;
+    border-radius: 2px;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  /* 主按钮 — Cyan */
+  .hud-btn-primary {
+    @apply hud-btn px-8 py-3.5 text-white;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    background: linear-gradient(180deg,
+      rgba(0, 245, 255, 0.15) 0%,
+      rgba(0, 245, 255, 0.06) 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(0, 245, 255, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 30px rgba(0, 245, 255, 0.1);
+    text-shadow: 0 0 20px rgba(0, 245, 255, 0.6);
+  }
+  .hud-btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.08) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.4s;
+  }
+  /* 左右两侧发光线 */
+  .hud-btn-primary::after {
+    content: '';
+    position: absolute;
+    left: 10px; right: 10px;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.8), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .hud-btn-primary:hover:not(:disabled)::before { transform: translateX(100%); }
+  .hud-btn-primary:hover:not(:disabled)::after { opacity: 1; }
+  .hud-btn-primary:hover:not(:disabled) {
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.6),
+      0 0 40px rgba(34, 211, 238, 0.2),
+      0 8px 32px rgba(14, 165, 233, 0.3),
+      inset 0 0 20px rgba(0, 245, 255, 0.05);
+    transform: translateY(-1px);
+    text-shadow: 0 0 30px rgba(0, 245, 255, 0.9);
+  }
+  .hud-btn-primary:active:not(:disabled) {
+    transform: translateY(0) scale(0.99);
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  .hud-btn-primary:disabled { @apply opacity-35 cursor-not-allowed; }
+
+  /* 红色危险按钮 */
+  .hud-btn-red {
+    @apply hud-btn px-8 py-3.5 text-white;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    background: linear-gradient(180deg,
+      rgba(229, 9, 20, 0.2) 0%,
+      rgba(229, 9, 20, 0.08) 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(229, 9, 20, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 30px rgba(229, 9, 20, 0.12);
+    text-shadow: 0 0 20px rgba(229, 9, 20, 0.6);
+  }
+  .hud-btn-red:hover:not(:disabled) {
+    box-shadow:
+      0 0 0 1px rgba(229, 9, 20, 0.7),
+      0 0 40px rgba(229, 9, 20, 0.25),
+      0 8px 32px rgba(229, 9, 20, 0.2);
+    transform: translateY(-1px);
+    text-shadow: 0 0 30px rgba(229, 9, 20, 0.9);
+  }
+  .hud-btn-red:active:not(:disabled) {
+    transform: translateY(0) scale(0.99);
+  }
+  .hud-btn-red:disabled { @apply opacity-35 cursor-not-allowed; }
+
+  /* Ghost 按钮 */
+  .hud-btn-ghost {
+    @apply hud-btn px-5 py-2.5;
+    color: rgba(186, 230, 253, 0.85);
+    background: rgba(14, 165, 233, 0.06);
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.14);
+  }
+  .hud-btn-ghost:hover:not(:disabled) {
+    background: rgba(14, 165, 233, 0.12);
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.32);
+    color: #fff;
+  }
+  .hud-btn-ghost:disabled { @apply opacity-35 cursor-not-allowed; }
+
+  /* Danger 按钮 (旧版兼容) */
+  .hud-btn-danger {
+    @apply hud-btn-red;
+    @apply px-4 py-2 text-sm;
+  }
+
+  /* Icon 按钮 */
+  .hud-btn-icon {
+    @apply hud-btn w-9 h-9 p-0;
+    background: rgba(14, 165, 233, 0.06);
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.12);
+    color: rgba(148, 163, 184, 0.8);
+  }
+  .hud-btn-icon:hover:not(:disabled) {
+    color: #fff;
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.3);
+    background: rgba(14, 165, 233, 0.12);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §4  INPUT SYSTEM
+  ══════════════════════════════════════════════════════ */
+
+  .hud-input-wrap { @apply relative; }
+  .hud-input-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.15);
+    z-index: 1;
+  }
+  .hud-input-wrap:focus-within::before {
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.5), 0 0 20px rgba(0, 245, 255, 0.08);
+  }
+  .hud-input-wrap:focus-within .hud-input-scan { opacity: 1; }
+  .hud-input-scan {
+    @apply absolute inset-x-0 h-px pointer-events-none opacity-0 transition-opacity;
+    top: 50%;
+    background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.7), transparent);
+    animation: data-stream 2.5s linear infinite;
+    z-index: 2;
+  }
+  .hud-input {
+    @apply w-full outline-none transition-all text-sm;
+    border-radius: 2px;
+    padding: 0.75rem 1rem;
+    color: #e8edf5;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow:
+      inset 0 0 0 1px rgba(34, 211, 238, 0.1),
+      inset 0 2px 8px rgba(0, 0, 0, 0.4);
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .hud-input:focus {
+    box-shadow:
+      inset 0 0 0 1px rgba(34, 211, 238, 0.4),
+      0 0 0 3px rgba(34, 211, 238, 0.06),
+      inset 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  .hud-input::placeholder { color: rgba(100, 116, 139, 0.5); }
+
+  /* ══════════════════════════════════════════════════════
+     §5  TABS SYSTEM
+  ══════════════════════════════════════════════════════ */
+
+  .hud-tabs {
+    @apply inline-flex gap-px p-0.5;
+    border-radius: 2px;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.1);
+  }
+  .hud-tab {
+    @apply flex items-center gap-2 px-4 py-2 text-xs font-mono font-medium whitespace-nowrap transition-all;
+    border-radius: 2px;
+    color: rgba(100, 116, 139, 0.9);
+    letter-spacing: 0.08em;
+  }
+  .hud-tab:hover { color: rgba(186, 230, 253, 0.8); background: rgba(255, 255, 255, 0.02); }
+  .hud-tab-active {
+    @apply hud-tab;
+    color: #22d3ee;
+    background: rgba(14, 165, 233, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.22), 0 0 20px rgba(34, 211, 238, 0.06);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §6  BADGE / STAMP / TAGS
+  ══════════════════════════════════════════════════════ */
+
+  .hud-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 font-mono text-[10px] font-semibold tracking-widest uppercase;
+    border-radius: 2px;
+    color: #22d3ee;
+    background: rgba(14, 165, 233, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.22);
+  }
+  .hud-badge-red {
+    color: #fca5a5;
+    background: rgba(220, 38, 38, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.28);
+  }
+  .hud-badge-gold {
+    color: #d4a853;
+    background: rgba(212, 168, 83, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(212, 168, 83, 0.25);
+  }
+  .hud-stamp {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 font-mono text-[9px] font-bold tracking-[0.3em] uppercase;
+    border-radius: 1px;
+    color: #f87171;
+    border: 1px solid rgba(220, 38, 38, 0.45);
+    background: rgba(220, 38, 38, 0.07);
+    transform: rotate(-2deg);
+    text-shadow: 0 0 8px rgba(229, 9, 20, 0.4);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §7  CHAT / DIALOGUE SYSTEM
+  ══════════════════════════════════════════════════════ */
+
+  .hud-chat-user {
+    @apply rounded-sm rounded-br-none px-4 py-3 text-sm leading-relaxed text-white;
+    background: linear-gradient(135deg, rgba(14, 116, 178, 0.5), rgba(8, 51, 90, 0.6));
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  .hud-chat-suspect {
+    @apply rounded-sm rounded-bl-none px-4 py-3 pl-5 text-sm leading-relaxed relative;
+    color: rgba(226, 232, 240, 0.9);
+    background: rgba(6, 10, 18, 0.85);
+    box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.12), 0 4px 20px rgba(0, 0, 0, 0.35);
+  }
+  .hud-chat-suspect::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 8px; bottom: 8px;
+    width: 2px;
+    background: linear-gradient(180deg, #dc2626, #0891b2);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §8  CINEMATIC SCENE FRAMES
+  ══════════════════════════════════════════════════════ */
+
+  .hud-scene {
+    @apply relative overflow-hidden mb-8;
+    border-radius: 2px;
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.15),
+      0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+  .hud-scene::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 8%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 2; pointer-events: none;
+  }
+  .hud-scene::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(3, 5, 8, 0.92) 0%, transparent 50%);
+    pointer-events: none; z-index: 1;
+  }
+  .hud-scene img {
+    @apply w-full h-full object-cover transition-transform duration-[1.4s];
+  }
+  .hud-scene:hover img { transform: scale(1.03); }
+  .hud-scene-meta {
+    @apply absolute bottom-0 inset-x-0 z-10 px-5 py-4;
+  }
+  .hud-scene-meta span {
+    @apply block font-mono text-[9px] font-bold tracking-[0.35em] uppercase mb-1;
+    color: rgba(34, 211, 238, 0.7);
+  }
+  .hud-scene-meta p {
+    @apply text-sm font-semibold text-white;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §9  PORTRAIT / AVATAR SYSTEM
+  ══════════════════════════════════════════════════════ */
+
+  .hud-portrait {
+    @apply relative shrink-0;
+    border-radius: 2px;
+    padding: 2px;
+    background: linear-gradient(145deg,
+      rgba(34, 211, 238, 0.5),
+      rgba(14, 165, 233, 0.2),
+      rgba(220, 38, 38, 0.3)
+    );
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+  }
+  .hud-portrait-inner {
+    @apply overflow-hidden bg-hud-deep;
+    border-radius: 1px;
+  }
+  .hud-portrait-glow {
+    box-shadow: 0 0 32px rgba(34, 211, 238, 0.3), 0 0 60px rgba(14, 165, 233, 0.12);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §10  LOADERS & SCORE SYSTEM
+  ══════════════════════════════════════════════════════ */
+
+  .hud-loader {
+    @apply w-10 h-10;
+    border-radius: 2px;
+    border: 1px solid rgba(34, 211, 238, 0.15);
+    border-top-color: #22d3ee;
+    border-right-color: rgba(220, 38, 38, 0.6);
+    animation: spin 0.9s linear infinite;
+  }
+  .hud-score-ring {
+    @apply relative inline-flex flex-col items-center justify-center;
+    border-radius: 2px;
+    width: 10rem; height: 10rem;
+    background: rgba(6, 10, 18, 0.8);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.2), 0 0 60px rgba(34, 211, 238, 0.08);
+  }
+  .hud-score-ring::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from 0deg, #22d3ee, #0ea5e9, #dc2626, #d4a853, #22d3ee);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: spin 12s linear infinite;
+    opacity: 0.6;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §11  EVIDENCE BOARD SYSTEM
+  ══════════════════════════════════════════════════════ */
+
+  .hud-evidence {
+    @apply hud-panel p-4 transition-all duration-300;
+  }
+  .hud-evidence-locked {
+    filter: saturate(0.45);
+  }
+  .hud-evidence-found {
+    box-shadow: 0 0 0 1px rgba(212, 168, 83, 0.28), 0 0 30px rgba(212, 168, 83, 0.07);
+  }
+  .hud-diff {
+    @apply relative text-left p-4 transition-all duration-300 cursor-pointer;
+    border-radius: 2px;
+    background: rgba(0, 0, 0, 0.35);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.07);
+  }
+  .hud-diff:hover { box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.22); }
+  .hud-diff-active {
+    background: rgba(14, 165, 233, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.42), 0 0 30px rgba(34, 211, 238, 0.08);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §12  ARCHIVE / FILING SYSTEM — L.A. Noire
+  ══════════════════════════════════════════════════════ */
+
+  .archive-panel {
+    @apply relative overflow-hidden;
+    background: linear-gradient(165deg, #2a2318 0%, #1a1610 100%);
+    box-shadow:
+      0 0 0 1px rgba(139, 119, 80, 0.28),
+      0 12px 40px rgba(0, 0, 0, 0.5);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+  .archive-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .archive-text {
+    font-family: "Special Elite", "Courier New", Courier, ui-monospace, monospace;
+    color: #c4b896;
+  }
+  .filing-cabinet {
+    @apply relative;
+    background: linear-gradient(180deg, #1a2332 0%, #111820 8%, #0B0F14 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.09), 0 20px 60px rgba(0, 0, 0, 0.5);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  }
+  .filing-cabinet::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.3), transparent);
+  }
+  .filing-drawer {
+    @apply relative transition-all duration-300;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    background: linear-gradient(180deg, #151c28 0%, #0B0F14 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.09);
+  }
+  .filing-drawer:hover {
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.32), 0 0 24px rgba(0, 245, 255, 0.07);
+    transform: translateX(4px);
+  }
+  .filing-drawer-handle {
+    @apply absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8;
+    background: linear-gradient(180deg, rgba(0, 245, 255, 0.5), rgba(0, 245, 255, 0.1));
+  }
+  .file-card {
+    @apply relative overflow-hidden transition-all duration-300;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+    background: linear-gradient(180deg, #151c28 0%, #0B0F14 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.1);
+  }
+  .file-card:hover {
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.38), 0 0 30px rgba(0, 245, 255, 0.09);
+    transform: translateY(-3px);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §13  DATA STREAM / PROGRESS BARS
+  ══════════════════════════════════════════════════════ */
+
+  .data-stream-bar { @apply w-full; }
+  .data-stream-track {
+    @apply relative overflow-hidden;
+    height: 4px;
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.12);
+  }
+  .data-stream-fill {
+    @apply absolute inset-y-0 left-0;
+    background: linear-gradient(90deg, rgba(0, 245, 255, 0.3), rgba(0, 245, 255, 0.85), rgba(229, 9, 20, 0.7));
+    box-shadow: 0 0 12px rgba(0, 245, 255, 0.45);
+  }
+  .data-stream-scan {
+    @apply absolute inset-y-0 w-8;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: data-stream 2s linear infinite;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §14  CRT OVERLAY EFFECTS
+  ══════════════════════════════════════════════════════ */
+
+  .crt-overlay { mix-blend-mode: overlay; }
+  .crt-scanlines {
+    @apply absolute inset-0 animate-crt-flicker pointer-events-none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.1) 2px,
+      rgba(0, 0, 0, 0.1) 4px
+    );
+    opacity: 0.04;
+  }
+  .crt-vignette {
+    @apply absolute inset-0 pointer-events-none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.4) 100%);
+    opacity: 0.7;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §15  FLOW INDICATORS — P5 Style
+  ══════════════════════════════════════════════════════ */
+
+  .flow-dot {
+    @apply h-1.5 transition-all;
+    clip-path: polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%);
+  }
+  .flow-dot-active { @apply w-6 bg-spec-red; box-shadow: 0 0 8px rgba(229, 9, 20, 0.6); }
+  .flow-dot-done { @apply w-2 bg-spec-cyan/50; }
+  .flow-dot-pending { @apply w-2 bg-spec-gray/30; }
+  .flow-dot-locked { @apply w-2 bg-spec-gray/15; }
+  .flow-step-active {
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    background: rgba(229, 9, 20, 0.15);
+    box-shadow: inset 0 0 0 1px rgba(229, 9, 20, 0.42), 0 0 20px rgba(229, 9, 20, 0.1);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §16  FINGERPRINT SCANNER
+  ══════════════════════════════════════════════════════ */
+
+  .fp-scan-line {
+    @apply absolute inset-x-0 h-8 pointer-events-none;
+    background: linear-gradient(180deg, transparent, rgba(0, 245, 255, 0.4), transparent);
+    animation: fp-scan 2.5s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §17  ROOM ATMOSPHERE SYSTEM
+  ══════════════════════════════════════════════════════ */
+
+  .room-entry    { --room-accent: #E50914; --room-secondary: #111820; }
+  .room-auth     { --room-accent: #00F5FF; --room-secondary: #0B0F14; }
+  .room-lobby    { --room-accent: #00F5FF; --room-secondary: #0B0F14; }
+  .room-archive  { --room-accent: #8A8F98; --room-secondary: #1a1610; }
+  .room-open     { --room-accent: #c4a574; --room-secondary: #1a1812; }
+  .room-evidence { --room-accent: #E50914; --room-secondary: #0B0F14; }
+  .room-forensics{ --room-accent: #00F5FF; --room-secondary: #0B0F14; }
+  .room-interrogate { --room-accent: #E50914; --room-secondary: #080A0D; }
+  .room-deduction   { --room-accent: #00F5FF; --room-secondary: #0B0F14; }
+  .room-reconstruction { --room-accent: #00F5FF; --room-secondary: #0B0F14; }
+  .room-closed   { --room-accent: #E50914; --room-secondary: #0B0F14; }
+
+  .room-evidence .hud-panel {
+    box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+  .room-reconstruction {
+    background-image:
+      linear-gradient(rgba(0, 245, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 245, 255, 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .wireframe-block {
+    @apply relative border border-spec-cyan/20 bg-spec-cyan/[0.03];
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    animation: wire-pulse 3s ease-in-out infinite;
+  }
+  .wireframe-scene::before {
+    content: '';
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0, 245, 255, 0.02) 2px, rgba(0, 245, 255, 0.02) 4px
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §18  LOBBY COMMAND CENTER
+  ══════════════════════════════════════════════════════ */
+
+  .lobby-scene { @apply relative w-full; }
+  .lobby-tactical-bar {
+    @apply mx-auto;
+    width: min(100%, 560px);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 245, 255, 0.07);
+  }
+  .lobby-module-card {
+    @apply relative overflow-hidden transition-all duration-300;
+    padding: 14px 16px;
+    background: rgba(17, 24, 32, 0.55);
+    border: 1px solid rgba(0, 245, 255, 0.09);
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  }
+  .lobby-module-card:hover {
+    border-color: rgba(0, 245, 255, 0.25);
+    background: rgba(17, 24, 32, 0.7);
+    transform: translateX(2px);
+  }
+  .lobby-desk-icon {
+    @apply w-7 h-7 flex items-center justify-center;
+    background: rgba(0, 245, 255, 0.04);
+    border: 1px solid rgba(0, 245, 255, 0.12);
+    clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §19  CINEMATIC ENTRY PAGE
+  ══════════════════════════════════════════════════════ */
+
+  /* 电影信箱格效果 */
+  .cinematic-bars::before,
+  .cinematic-bars::after {
+    content: '';
+    position: fixed;
+    left: 0; right: 0;
+    height: 70px;
+    background: #000;
+    z-index: 100;
+    pointer-events: none;
+  }
+  .cinematic-bars::before { top: 0; }
+  .cinematic-bars::after { bottom: 0; }
+
+  /* 终端 boot 序列样式 */
+  .boot-terminal {
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    font-size: 11px;
+    line-height: 1.8;
+    color: rgba(0, 245, 255, 0.75);
+    text-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
+  }
+  .boot-line-active {
+    color: rgba(0, 245, 255, 0.9);
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.6);
+  }
+  .boot-line-done {
+    color: rgba(0, 245, 255, 0.4);
+    text-shadow: none;
+  }
+  .boot-cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: rgba(0, 245, 255, 0.8);
+    vertical-align: middle;
+    animation: boot-blink 1s step-end infinite;
+    box-shadow: 0 0 6px rgba(0, 245, 255, 0.8);
+  }
+
+  /* 超大 IB 徽章 */
+  .ib-emblem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(20% 0, 100% 0, 80% 100%, 0 100%);
+    background: rgba(11, 15, 20, 0.9);
+  }
+  .ib-emblem::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(20% 0, 100% 0, 80% 100%, 0 100%);
+    background: linear-gradient(135deg,
+      rgba(229, 9, 20, 0.3),
+      transparent 40%,
+      rgba(0, 245, 255, 0.1) 100%
+    );
+    animation: hologram 3s ease-in-out infinite;
+  }
+
+  /* 进入按钮 — AAA 级 */
+  .enter-btn {
+    @apply relative overflow-hidden font-display font-black uppercase tracking-[0.2em] text-white;
+    padding: 18px 56px;
+    clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+    background: linear-gradient(180deg,
+      rgba(229, 9, 20, 0.2) 0%,
+      rgba(229, 9, 20, 0.08) 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(229, 9, 20, 0.6),
+      0 0 40px rgba(229, 9, 20, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    text-shadow: 0 0 20px rgba(229, 9, 20, 0.7);
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .enter-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+  .enter-btn::after {
+    content: '';
+    position: absolute;
+    inset-x: 20px;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 1), transparent);
+    box-shadow: 0 0 8px rgba(229, 9, 20, 0.8);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .enter-btn:hover::before { transform: translateX(100%); }
+  .enter-btn:hover::after { opacity: 1; }
+  .enter-btn:hover {
+    box-shadow:
+      0 0 0 1px rgba(229, 9, 20, 0.9),
+      0 0 60px rgba(229, 9, 20, 0.35),
+      0 8px 32px rgba(229, 9, 20, 0.25),
+      inset 0 0 30px rgba(229, 9, 20, 0.08);
+    transform: translateY(-2px) scaleX(1.01);
+    text-shadow: 0 0 30px rgba(229, 9, 20, 1), 0 0 60px rgba(229, 9, 20, 0.5);
+  }
+  .enter-btn:active {
+    transform: translateY(0) scale(0.99);
+    box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §20  DEDUCTION & RECONSTRUCTION
+  ══════════════════════════════════════════════════════ */
+
+  .deduction-graph::after {
+    content: '';
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(11, 15, 20, 0.6) 100%);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §21  HOLOGRAPHIC ELEMENTS
+  ══════════════════════════════════════════════════════ */
+
+  .hologram-text {
+    color: #00F5FF;
+    text-shadow:
+      0 0 7px rgba(0, 245, 255, 0.9),
+      0 0 14px rgba(0, 245, 255, 0.6),
+      0 0 28px rgba(0, 245, 255, 0.4);
+    animation: hologram 3s ease-in-out infinite;
+  }
+  .hologram-panel {
+    border: 1px solid rgba(0, 245, 255, 0.2);
+    background: rgba(0, 245, 255, 0.02);
+    box-shadow:
+      inset 0 0 30px rgba(0, 245, 255, 0.05),
+      0 0 20px rgba(0, 245, 255, 0.08);
+    animation: hologram 4s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §22  GLITCH EFFECTS
+  ══════════════════════════════════════════════════════ */
+
+  .glitch-container { position: relative; }
+  .glitch-container::before,
+  .glitch-container::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .glitch-container::before {
+    color: #00F5FF;
+    clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+    transform: translateX(-3px);
+    animation: glitch-rgb 6s step-end infinite;
+    opacity: 0.7;
+  }
+  .glitch-container::after {
+    color: #E50914;
+    clip-path: polygon(0 55%, 100% 55%, 100% 70%, 0 70%);
+    transform: translateX(3px);
+    animation: glitch-rgb 6s step-end infinite 0.15s;
+    opacity: 0.7;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §23  HEADER NAV BAR
+  ══════════════════════════════════════════════════════ */
+
+  .game-header {
+    @apply sticky top-0 z-50 flex items-center;
+    background: linear-gradient(180deg,
+      rgba(11, 15, 20, 0.96) 0%,
+      rgba(11, 15, 20, 0.88) 100%
+    );
+    backdrop-filter: blur(20px) saturate(1.5);
+    border-bottom: 1px solid rgba(0, 245, 255, 0.08);
+    box-shadow:
+      0 1px 0 rgba(0, 245, 255, 0.06),
+      0 4px 24px rgba(0, 0, 0, 0.5);
+    height: 52px;
+  }
+  .game-header::before {
+    content: '';
+    position: absolute;
+    inset-x: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(229, 9, 20, 0.3) 20%,
+      rgba(0, 245, 255, 0.4) 50%,
+      rgba(229, 9, 20, 0.3) 80%,
+      transparent 100%
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §24  NEO ICON BOX
+  ══════════════════════════════════════════════════════ */
+
+  .neo-icon-box {
+    @apply flex items-center justify-center;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    width: 2.75rem; height: 2.75rem;
+    background: rgba(0, 245, 255, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.22);
+    transition: all 0.2s;
+  }
+  .neo-icon-box:hover {
+    background: rgba(0, 245, 255, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.45), 0 0 20px rgba(0, 245, 255, 0.1);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     §25  LEGACY ALIASES (向下兼容)
+  ══════════════════════════════════════════════════════ */
+
+  .neo-card, .panel { @apply hud-panel; }
+  .neo-card-hover, .panel-hover { @apply hud-panel-hover; }
+  .neo-solid, .panel-solid, .glass-dark { @apply hud-panel hud-panel-solid; }
+  .conan-title { @apply hud-title; }
+  .conan-title-accent { @apply hud-title-accent; }
+  .conan-subtitle { @apply hud-label; }
+  .conan-divider { @apply hud-divider; }
+  .conan-badge { @apply hud-badge hud-badge-red; }
+  .conan-input { @apply hud-input; }
+  .conan-tab { @apply hud-tab; }
+  .conan-tab-active { @apply hud-tab-active; }
+  .tab-bar { @apply hud-tabs; }
+  .btn-primary { @apply hud-btn-primary; }
+  .btn-ghost { @apply hud-btn-ghost; }
+  .btn-accent { @apply hud-btn-danger; }
+  .case-stamp { @apply hud-stamp; }
+  .conan-loader { @apply hud-loader; }
+  .scene-frame { @apply hud-scene; }
+  .scene-frame-label { @apply hud-scene-meta; }
+  .chat-bubble-user { @apply hud-chat-user; }
+  .chat-bubble-suspect { @apply hud-chat-suspect; }
+  .score-ring { @apply hud-score-ring; }
+  .portrait-ring { @apply hud-portrait; }
+  .portrait-ring-inner { @apply hud-portrait-inner; }
+  .page-shell { overflow-x: hidden; max-width: 100vw; }
+  .gen-step-active {
+    background: rgba(14, 165, 233, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.25);
+  }
+  .room-lobby { background: #0B0F14; }
+  .lobby-desk-module { @apply lobby-module-card; }
+}
+
+@layer utilities {
+  /* HUD 网格背景 */
+  .bg-hud-grid {
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .bg-hud-grid-dense {
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  /* 噪波纹理 */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+  /* 对角纹路 */
+  .bg-diagonal {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent, transparent 2px,
+      rgba(0, 245, 255, 0.025) 2px, rgba(0, 245, 255, 0.025) 4px
+    );
+  }
+  /* 斜切变换 */
+  .skew-p5 { transform: skewX(-6deg); }
+  .skew-p5-inner { transform: skewX(6deg); }
+  /* 发光文字 */
+  .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 245, 255, 0.8), 0 0 20px rgba(0, 245, 255, 0.4); }
+  .text-glow-red  { text-shadow: 0 0 10px rgba(229, 9, 20, 0.8), 0 0 20px rgba(229, 9, 20, 0.4); }
+  .text-glow-gold { text-shadow: 0 0 10px rgba(212, 168, 83, 0.8), 0 0 20px rgba(212, 168, 83, 0.4); }
+}
+
+/* ══════════════════════════════════════════════════════
+   CSS Custom Keyframes (non-tailwind extras)
+══════════════════════════════════════════════════════ */
+
+@keyframes fp-scan {
+  0%, 100% { top: 0; }
+  50% { top: calc(100% - 2rem); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+@keyframes data-stream {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+@keyframes glitch-rgb {
+  0%, 92%, 100% { transform: none; filter: none; }
+  93% { transform: translateX(-3px); filter: hue-rotate(-40deg) saturate(2); }
+  94% { transform: translateX(4px); filter: hue-rotate(40deg) saturate(2); }
+  95% { transform: translateX(-2px) skewX(-5deg); filter: none; }
+  96% { transform: none; filter: brightness(2); }
+  97% { transform: translateX(3px); filter: hue-rotate(-20deg); }
+  98% { transform: skewX(5deg); filter: none; }
+}
+@keyframes wire-pulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.35; }
+}
+@keyframes boot-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@keyframes hologram {
+  0%, 100% { opacity: 0.8; transform: scaleY(1); }
+  25% { opacity: 0.95; transform: scaleY(1.002); }
+  50% { opacity: 0.75; transform: scaleY(0.998); }
+  75% { opacity: 0.9; transform: scaleY(1.001); }
+}
+@keyframes neon-pulse-red {
+  0%, 100% { box-shadow: 0 0 5px #E50914, 0 0 10px #E50914; }
+  50% { box-shadow: 0 0 10px #E50914, 0 0 30px #E50914, 0 0 60px rgba(229,9,20,0.3); }
+}
+@keyframes neon-pulse-cyan {
+  0%, 100% { box-shadow: 0 0 5px #00F5FF, 0 0 10px #00F5FF; }
+  50% { box-shadow: 0 0 10px #00F5FF, 0 0 30px #00F5FF, 0 0 60px rgba(0,245,255,0.3); }
+}
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+@keyframes radar-sweep { to { transform: rotate(360deg); } }
+@keyframes hud-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+@keyframes corner-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@keyframes crt-flicker {
+  0%, 97%, 100% { opacity: 1; }
+  98% { opacity: 0.97; }
+  99% { opacity: 0.99; }
+}
+@keyframes data-flicker {
+  0%, 94%, 100% { opacity: 1; }
+  95% { opacity: 0.5; }
+}
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ══════════════════════════════════════════════════════
+   Scrollbar Styling
+══════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.4), rgba(14, 165, 233, 0.2));
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.7), rgba(14, 165, 233, 0.4));
+}
