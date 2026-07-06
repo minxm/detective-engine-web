@@ -6,6 +6,7 @@
       "comment": "将 YOUR_SCF_TRIGGER_DOMAIN 替换为腾讯云 SCF 触发器域名，格式如 service-xxx.gz.apigw.tencentcs.com"
     },
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "nodeVersion": "20.19.6"
 }
 
