@@ -1,6 +1,11 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://YOUR_API_DOMAIN/api/$1" },
+    {
+      "source": "/api/(.*)",
+      "destination": "https://YOUR_SCF_TRIGGER_DOMAIN/api/$1",
+      "comment": "将 YOUR_SCF_TRIGGER_DOMAIN 替换为腾讯云 SCF 触发器域名，格式如 service-xxx.gz.apigw.tencentcs.com"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
+
