@@ -1,10 +1,10 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://YOUR_SCF_TRIGGER_DOMAIN/api/$1"
+      "source": "/api/**",
+      "destination": "https://YOUR_SCF_TRIGGER_DOMAIN/api/:splat"
     },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/**", "destination": "/index.html" }
   ]
 }
 
