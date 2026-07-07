@@ -6,7 +6,6 @@ export default function SceneFrame({
   label,
   subtitle,
   aspect = 'aspect-[16/7]',
-  maxHeight,
 }: {
   src: string;
   alt: string;
