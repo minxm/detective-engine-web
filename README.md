@@ -41,4 +41,18 @@ npm run dev
 
 ## 部署
 
-GitHub Push → EdgeOne Pages 构建 `npm run build`，`/api/*` 转发至 Cloud Functions。
+GitHub Push → EdgeOne Pages 托管 `dist/`（本地 `npm run build:app` 预构建）。
+
+生产 API 地址在 `.env.production` 中配置：
+
+```env
+VITE_API_BASE=https://1450903261-2c7ic9hgxq.ap-shanghai.tencentscf.com/api
+```
+
+修改 SCF 触发器 URL 后需重新执行 `npm run build:app` 并提交 `dist/`。
+```
+npm run build:app
+git add -A
+git commit -m "..."
+git push
+```
