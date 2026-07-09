@@ -39,16 +39,11 @@ npm run dev
 
 GitHub Push → EdgeOne Pages 托管 `dist/`（本地 `npm run build:app` 预构建）。
 
-生产 API 地址在 `.env.production` 中配置：
+生产环境通过 `middleware.js` 将同源 `/api` 反代到腾讯云 SCF，无需跨域：
 
 ```env
-VITE_API_BASE=https://1450903261-2c7ic9hgxq.ap-shanghai.tencentscf.com/api
+VITE_API_BASE=/api
 ```
 
-修改 SCF 触发器 URL 后需重新执行 `npm run build:app` 并提交 `dist/`。
-```
-npm run build:app
-git add -A
-git commit -m "..."
-git push
-```
+若 SCF 触发器 URL 变更，请同步修改 `middleware.js` 中的 `API_ORIGIN`，然后重新构建并部署。
+
