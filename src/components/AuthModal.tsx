@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogIn, UserPlus, Ghost, X } from 'lucide-react';
+import { LogIn, UserPlus, X } from 'lucide-react';
 import HudPanel from '@/components/hud/HudPanel';
 import HudButton from '@/components/hud/HudButton';
 import { HudInput } from '@/components/hud/HudInput';
+import { HudPasswordInput } from '@/components/hud/HudPasswordInput';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { t } from '@/i18n/zh';
+import { parseAuthError } from '@/utils/authError';
 
 export default function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { cloudBaseEnabled, loginGuest, loginCloudBaseAnonymous, loginCloudBasePassword } = useAuthStore();
+  const { cloudBaseEnabled, loginCloudBasePassword } = useAuthStore();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const showPassword = true;
 
   const handle = async (action: () => Promise<void> | void) => {
     setLoading(true);
@@ -21,10 +26,18 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
       await action();
       onClose();
     } catch (err) {
-      setError((err as Error).message);
+      setError(parseAuthError(err, t.auth.loginFailed));
     } finally {
       setLoading(false);
     }
+  };
+
+  const switchAuthTab = (tab: 'login' | 'register') => {
+    if (tab === authTab) return;
+    setAuthTab(tab);
+    setUsername('');
+    setPassword('');
+    setError('');
   };
 
   return (
@@ -34,7 +47,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -56,30 +69,66 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
               </div>
 
               {cloudBaseEnabled ? (
-                <div className="space-y-3">
-                  <HudButton variant="ghost" disabled={loading} onClick={() => handle(loginCloudBaseAnonymous)} className="w-full justify-center">
-                    <Ghost className="w-4 h-4" /> {t.auth.anonymous}
-                  </HudButton>
-                  <div className="space-y-2 pt-2">
-                    <HudInput value={username} onChange={(e) => setUsername(e.target.value)} placeholder={t.auth.username} />
-                    <HudInput value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder={t.auth.password} />
-                    <div className="flex gap-2 pt-1">
-                      <HudButton disabled={loading} onClick={() => handle(() => loginCloudBasePassword(username, password))} className="flex-1 !text-xs !py-2.5">
-                        <LogIn className="w-4 h-4" /> {t.common.login}
-                      </HudButton>
-                      <HudButton variant="ghost" disabled={loading} onClick={() => handle(() => loginCloudBasePassword(username, password, true))} className="flex-1 !text-xs !py-2.5">
-                        <UserPlus className="w-4 h-4" /> {t.auth.register}
-                      </HudButton>
-                    </div>
+                <div className="space-y-2 pt-1">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => switchAuthTab('login')}
+                      className={`font-mono text-[10px] py-2 tracking-wider transition-colors ${
+                        authTab === 'login'
+                          ? 'text-spec-cyan bg-spec-cyan/10'
+                          : 'text-spec-gray/45 hover:text-spec-gray/70'
+                      }`}
+                      style={{
+                        clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)',
+                        boxShadow: authTab === 'login' ? 'inset 0 0 0 1px rgba(0,245,255,0.25)' : 'inset 0 0 0 1px rgba(0,245,255,0.06)',
+                      }}
+                    >
+                      {t.common.login}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => switchAuthTab('register')}
+                      className={`font-mono text-[10px] py-2 tracking-wider transition-colors ${
+                        authTab === 'register'
+                          ? 'text-spec-cyan bg-spec-cyan/10'
+                          : 'text-spec-gray/45 hover:text-spec-gray/70'
+                      }`}
+                      style={{
+                        clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)',
+                        boxShadow: authTab === 'register' ? 'inset 0 0 0 1px rgba(0,245,255,0.25)' : 'inset 0 0 0 1px rgba(0,245,255,0.06)',
+                      }}
+                    >
+                      {t.auth.register}
+                    </button>
                   </div>
+                  <HudInput value={username} onChange={(e) => setUsername(e.target.value)} placeholder={t.auth.username} autoComplete="username" />
+                  {showPassword && (
+                    <HudPasswordInput value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t.auth.password} autoComplete={authTab === 'login' ? 'current-password' : 'new-password'} />
+                  )}
+                  <HudButton
+                    disabled={loading || !username.trim() || !password}
+                    onClick={() =>
+                      handle(() =>
+                        loginCloudBasePassword(username, password, authTab === 'register')
+                      )
+                    }
+                    className="w-full !text-xs !py-2.5"
+                  >
+                    {authTab === 'login' ? (
+                      <>
+                        <LogIn className="w-4 h-4" /> {t.common.login}
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4" /> {t.auth.register}
+                      </>
+                    )}
+                  </HudButton>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 mb-4 font-mono">{t.auth.guestHint}</p>
-              )}
-
-              <button type="button" disabled={loading} onClick={() => handle(loginGuest)} className="w-full mt-4 text-xs text-slate-500 hover:text-cyan-300 py-2 font-mono tracking-wider transition-colors">
-                {t.auth.guest}
-              </button>
+              <p className="text-sm text-slate-500 mb-4 font-mono">认证服务暂不可用，请稍后重试</p>
+            )}
               {error && <p className="mt-4 text-sm text-red-400 text-center font-mono">{error}</p>}
             </HudPanel>
           </motion.div>

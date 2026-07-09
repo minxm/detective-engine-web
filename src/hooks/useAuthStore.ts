@@ -4,7 +4,6 @@ import {
   getAccessToken,
   getCloudBaseLoginState,
   isCloudBaseConfigured,
-  loginAnonymous,
   loginWithPassword,
   logoutCloudBase,
   registerWithPassword,
@@ -15,7 +14,7 @@ import { inflight } from '@/utils/inflight';
 interface AuthState {
   token: string | null;
   nickname: string;
-  authMode: 'guest' | 'cloudbase' | 'none';
+  authMode: 'cloudbase' | 'none';
   cloudBaseEnabled: boolean;
   initialized: boolean;
   isAdmin: boolean;
@@ -24,9 +23,11 @@ interface AuthState {
   setNickname: (nickname: string) => void;
   initAuth: () => Promise<void>;
   refreshAdminStatus: () => Promise<void>;
-  loginGuest: () => Promise<void>;
-  loginCloudBaseAnonymous: () => Promise<void>;
-  loginCloudBasePassword: (username: string, password: string, register?: boolean) => Promise<void>;
+  loginCloudBasePassword: (
+    username: string,
+    password: string,
+    register?: boolean
+  ) => Promise<void>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
 }
@@ -37,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       token: null,
-      nickname: '匿名侦探',
+      nickname: '',
       authMode: 'none',
       cloudBaseEnabled: isCloudBaseConfigured(),
       initialized: false,
@@ -49,7 +50,7 @@ export const useAuthStore = create<AuthState>()(
 
       refreshAdminStatus: async () => {
         const { token, authMode } = get();
-        if (!token || authMode === 'guest') {
+        if (!token || authMode !== 'cloudbase') {
           set({ isAdmin: false, role: 'user' });
           return;
         }
@@ -77,14 +78,23 @@ export const useAuthStore = create<AuthState>()(
 
             set({ cloudBaseEnabled: enabled });
 
-            if (enabled) {
+            const { token, authMode } = get();
+
+            // 恢复本地认证会话（token 以 local. 开头表示由后端本地认证系统签发）
+            if (authMode === 'cloudbase' && token?.startsWith('local.')) {
+              await get().refreshAdminStatus();
+              return;
+            }
+
+            // 恢复 CloudBase 会话（兼容旧版 CloudBase token）
+            if (enabled && authMode === 'cloudbase' && token && !token.startsWith('local.')) {
               const state = await getCloudBaseLoginState();
               if (state) {
-                const token = await getAccessToken();
-                if (token) {
+                const freshToken = await getAccessToken();
+                if (freshToken) {
                   const user = state.user as { nickName?: string; username?: string };
                   set({
-                    token,
+                    token: freshToken,
                     authMode: 'cloudbase',
                     nickname: user?.nickName || user?.username || get().nickname,
                   });
@@ -92,22 +102,19 @@ export const useAuthStore = create<AuthState>()(
                   return;
                 }
               }
+              // CloudBase 会话已过期
+              set({ token: null, authMode: 'none', nickname: '', isAdmin: false, role: 'user' });
+              return;
             }
 
-            if (!get().token) {
-              const guestId = `guest_${Date.now().toString(36)}`;
-              set({
-                token: guestId,
-                authMode: 'guest',
-                nickname: `侦探${guestId.slice(-4)}`,
-                isAdmin: false,
-                role: 'user',
-              });
-            } else if (get().authMode === 'guest') {
-              set({ isAdmin: false, role: 'user' });
-            } else {
-              await get().refreshAdminStatus();
-            }
+            // 未认证
+            set({
+              token: null,
+              authMode: 'none',
+              nickname: '',
+              isAdmin: false,
+              role: 'user',
+            });
           } finally {
             set({ initialized: true });
             bootstrapPromise = null;
@@ -115,24 +122,6 @@ export const useAuthStore = create<AuthState>()(
         })();
 
         return bootstrapPromise;
-      },
-
-      loginGuest: async () => {
-        const guestId = `guest_${Date.now().toString(36)}`;
-        set({
-          token: guestId,
-          authMode: 'guest',
-          nickname: `侦探${guestId.slice(-4)}`,
-          isAdmin: false,
-          role: 'user',
-        });
-      },
-
-      loginCloudBaseAnonymous: async () => {
-        const { accessToken } = await loginAnonymous();
-        set({ token: accessToken, authMode: 'cloudbase', nickname: '匿名侦探' });
-        await get().refreshAdminStatus();
-        await sendHeartbeat().catch(() => undefined);
       },
 
       loginCloudBasePassword: async (username, password, register) => {
@@ -146,20 +135,27 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         if (get().authMode === 'cloudbase') await logoutCloudBase().catch(() => undefined);
-        set({ token: null, authMode: 'none', nickname: '匿名侦探', isAdmin: false, role: 'user' });
-        await get().loginGuest();
+        set({ token: null, authMode: 'none', nickname: '', isAdmin: false, role: 'user' });
       },
 
       refreshToken: async () => {
-        if (get().authMode !== 'cloudbase') return get().token;
-        const token = await getAccessToken();
-        if (token) set({ token });
-        return token;
+        const { authMode, token } = get();
+        if (authMode !== 'cloudbase') return token;
+        // 本地 token 长期有效，无需刷新
+        if (token?.startsWith('local.')) return token;
+        const freshToken = await getAccessToken();
+        if (freshToken) set({ token: freshToken });
+        return freshToken;
       },
     }),
     {
       name: 'detective-auth',
-      partialize: (state) => ({ nickname: state.nickname, authMode: state.authMode }),
+      // 持久化 token（本地认证 token 需要跨页面保留）
+      partialize: (state) => ({
+        nickname: state.nickname,
+        authMode: state.authMode,
+        token: state.token,
+      }),
     }
   )
 );

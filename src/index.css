@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ╔════════════════════════════════════════════════════════════╗
-   ║  INTELLIGENCE BUREAU — AAA GAME UI DESIGN SYSTEM          ║
-   ║  Future Detective Platform · Classified Level 5           ║
-   ╚════════════════════════════════════════════════════════════╝ */
+/* ??????????????????????????????????????????????????????????????
+   ?? INTELLIGENCE BUREAU ??AAA GAME UI DESIGN SYSTEM          ??
+   ?? Future Detective Platform ? Classified Level 5           ??
+   ?????????????????????????????????????????????????????????????? */
 
 @layer base {
   html, body {
@@ -31,9 +31,9 @@
 
 @layer components {
 
-  /* ══════════════════════════════════════════════════════
-     §1  HUD PANEL SYSTEM — Glass + Angular + Cyberpunk
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?1  HUD PANEL SYSTEM ??Glass + Angular + Cyberpunk
+  ?????????????????????????????????????????????????????? */
 
   .hud-panel {
     @apply relative overflow-hidden;
@@ -78,7 +78,7 @@
   }
   .hud-panel-inner { @apply relative z-[1]; }
 
-  /* HUD 扫描光条 */
+  /* HUD ???? */
   .hud-scan-sweep {
     @apply absolute inset-0 pointer-events-none overflow-hidden z-[3];
   }
@@ -91,7 +91,7 @@
     animation: shimmer-sweep 4s ease-in-out infinite;
   }
 
-  /* HUD 角落括号 */
+  /* HUD ???? */
   .hud-corners {
     @apply absolute inset-0 pointer-events-none;
   }
@@ -112,9 +112,9 @@
     border-right: 1px solid rgba(0, 245, 255, 0.6);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §2  TYPOGRAPHY SYSTEM — P5 / Cyberpunk / Military
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?2  TYPOGRAPHY SYSTEM ??P5 / Cyberpunk / Military
+  ?????????????????????????????????????????????????????? */
 
   .hud-label {
     @apply font-mono text-[10px] font-semibold tracking-[0.25em] uppercase;
@@ -154,12 +154,103 @@
     background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.5) 50%, transparent);
   }
 
+  /* Auth page ??frame & status chrome */
+  .auth-glow {
+    position: absolute;
+    inset: -24px -16px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 245, 255, 0.08), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(229, 9, 20, 0.05), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .auth-frame {
+    @apply relative;
+  }
+  .auth-frame .auth-corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0.55;
+  }
+  .auth-corner-tl { top: 0; left: 0; border-top: 1px solid rgba(0, 245, 255, 0.45); border-left: 1px solid rgba(0, 245, 255, 0.45); }
+  .auth-corner-tr { top: 0; right: 0; border-top: 1px solid rgba(0, 245, 255, 0.45); border-right: 1px solid rgba(0, 245, 255, 0.45); }
+  .auth-corner-bl { bottom: 0; left: 0; border-bottom: 1px solid rgba(229, 9, 20, 0.35); border-left: 1px solid rgba(229, 9, 20, 0.35); }
+  .auth-corner-br { bottom: 0; right: 0; border-bottom: 1px solid rgba(229, 9, 20, 0.35); border-right: 1px solid rgba(229, 9, 20, 0.35); }
+
+  .auth-status-pill {
+    @apply inline-flex items-center gap-2 px-4 py-1.5 font-mono text-[9px] tracking-[0.18em] uppercase;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    background: rgba(11, 15, 20, 0.75);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.12);
+  }
+
+  .auth-divider-labeled {
+    @apply relative flex items-center gap-3 my-3;
+  }
+  .auth-divider-labeled::before,
+  .auth-divider-labeled::after {
+    content: '';
+    @apply flex-1 h-px;
+    background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.28), transparent);
+  }
+
+  .auth-watermark {
+    @apply absolute inset-x-0 font-display font-black uppercase select-none pointer-events-none leading-none text-center;
+    font-size: clamp(3.5rem, 14vw, 6rem);
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.018);
+    top: -0.15em;
+    transform: skewX(-4deg);
+  }
+
+  .auth-header {
+    @apply relative flex flex-col items-center text-center w-full mb-5;
+    gap: 0.625rem;
+  }
+
+  .auth-header-row {
+    @apply flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full;
+  }
+
+  .auth-header-title {
+    @apply flex shrink-0;
+  }
+
+  .auth-header-badge {
+    @apply inline-flex items-center justify-center gap-2 px-2.5 py-1;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    background: rgba(0, 245, 255, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.16);
+  }
+
+  .auth-header-subtitle {
+    @apply font-mono text-[10px] text-spec-gray/45 tracking-[0.18em] max-w-xs leading-relaxed px-2;
+  }
+
+  .auth-session-card {
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    background: linear-gradient(135deg, rgba(0, 245, 255, 0.06), rgba(0, 245, 255, 0.02));
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.18), 0 0 24px rgba(0, 245, 255, 0.04);
+  }
+
+  .auth-side-tag {
+    @apply font-mono text-[7px] tracking-[0.3em];
+    writing-mode: vertical-rl;
+  }
+
+  .auth-side-tag-active { color: rgba(0, 245, 255, 0.42); }
+  .auth-side-tag-standby { color: rgba(196, 200, 212, 0.45); }
+
   .hud-meta {
     @apply font-mono text-xs tracking-wider;
     color: rgba(148, 163, 184, 0.7);
   }
 
-  /* Persona 5 斜切标题 */
+  /* Persona 5 ???? */
   .p5-title-wrap {
     @apply inline-block;
     transform: skewX(-6deg);
@@ -182,7 +273,7 @@
       0 4px 0 rgba(0, 0, 0, 0.5);
   }
 
-  /* 大号斜切标题 — 游戏 UI 级别 */
+  /* ?????? ???? UI ?? */
   .game-title {
     @apply font-display font-black uppercase;
     font-size: clamp(2.5rem, 8vw, 5rem);
@@ -210,7 +301,7 @@
     -webkit-text-stroke: 0.5px rgba(229, 9, 20, 0.5);
   }
 
-  /* 排名大字 — Persona 5 */
+  /* ???? ??Persona 5 */
   .rank-display {
     @apply relative font-black leading-none;
     font-size: clamp(4rem, 15vw, 7rem);
@@ -228,9 +319,9 @@
     transform: skewX(8deg);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §3  BUTTON SYSTEM — Mechanical + HUD Style
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?3  BUTTON SYSTEM ??Mechanical + HUD Style
+  ?????????????????????????????????????????????????????? */
 
   .hud-btn {
     @apply relative inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 overflow-hidden cursor-pointer;
@@ -240,7 +331,7 @@
     font-family: 'Orbitron', sans-serif;
   }
 
-  /* 主按钮 — Cyan */
+  /* ??????Cyan */
   .hud-btn-primary {
     @apply hud-btn px-8 py-3.5 text-white;
     clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
@@ -262,7 +353,7 @@
     transform: translateX(-100%);
     transition: transform 0.4s;
   }
-  /* 左右两侧发光线 */
+  /* ????????*/
   .hud-btn-primary::after {
     content: '';
     position: absolute;
@@ -290,7 +381,7 @@
   }
   .hud-btn-primary:disabled { @apply opacity-35 cursor-not-allowed; }
 
-  /* 红色危险按钮 */
+  /* ?????? */
   .hud-btn-red {
     @apply hud-btn px-8 py-3.5 text-white;
     clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
@@ -317,7 +408,7 @@
   }
   .hud-btn-red:disabled { @apply opacity-35 cursor-not-allowed; }
 
-  /* Ghost 按钮 */
+  /* Ghost ?? */
   .hud-btn-ghost {
     @apply hud-btn px-5 py-2.5;
     color: rgba(186, 230, 253, 0.85);
@@ -331,13 +422,13 @@
   }
   .hud-btn-ghost:disabled { @apply opacity-35 cursor-not-allowed; }
 
-  /* Danger 按钮 (旧版兼容) */
+  /* Danger ?? (????) */
   .hud-btn-danger {
     @apply hud-btn-red;
     @apply px-4 py-2 text-sm;
   }
 
-  /* Icon 按钮 */
+  /* Icon ?? */
   .hud-btn-icon {
     @apply hud-btn w-9 h-9 p-0;
     background: rgba(14, 165, 233, 0.06);
@@ -350,9 +441,9 @@
     background: rgba(14, 165, 233, 0.12);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §4  INPUT SYSTEM
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?4  INPUT SYSTEM
+  ?????????????????????????????????????????????????????? */
 
   .hud-input-wrap { @apply relative; }
   .hud-input-wrap::before {
@@ -395,9 +486,19 @@
   }
   .hud-input::placeholder { color: rgba(100, 116, 139, 0.5); }
 
-  /* ══════════════════════════════════════════════════════
-     §5  TABS SYSTEM
-  ══════════════════════════════════════════════════════ */
+  .hud-password-wrap .hud-password-input { padding-right: 2.75rem; }
+  .hud-password-toggle {
+    @apply absolute right-0 top-0 bottom-0 flex items-center justify-center transition-colors;
+    width: 2.75rem;
+    color: rgba(196, 200, 212, 0.70);
+    z-index: 3;
+  }
+  .hud-password-toggle:hover { color: rgba(0, 245, 255, 0.75); }
+  .hud-password-wrap:focus-within .hud-password-toggle { color: rgba(0, 245, 255, 0.55); }
+
+  /* ??????????????????????????????????????????????????????
+     ?5  TABS SYSTEM
+  ?????????????????????????????????????????????????????? */
 
   .hud-tabs {
     @apply inline-flex gap-px p-0.5;
@@ -419,9 +520,9 @@
     box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.22), 0 0 20px rgba(34, 211, 238, 0.06);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §6  BADGE / STAMP / TAGS
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?6  BADGE / STAMP / TAGS
+  ?????????????????????????????????????????????????????? */
 
   .hud-badge {
     @apply inline-flex items-center gap-1.5 px-2.5 py-1 font-mono text-[10px] font-semibold tracking-widest uppercase;
@@ -450,9 +551,9 @@
     text-shadow: 0 0 8px rgba(229, 9, 20, 0.4);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §7  CHAT / DIALOGUE SYSTEM
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?7  CHAT / DIALOGUE SYSTEM
+  ?????????????????????????????????????????????????????? */
 
   .hud-chat-user {
     @apply rounded-sm rounded-br-none px-4 py-3 text-sm leading-relaxed text-white;
@@ -473,9 +574,9 @@
     background: linear-gradient(180deg, #dc2626, #0891b2);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §8  CINEMATIC SCENE FRAMES
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?8  CINEMATIC SCENE FRAMES
+  ?????????????????????????????????????????????????????? */
 
   .hud-scene {
     @apply relative overflow-hidden mb-8;
@@ -515,9 +616,9 @@
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §9  PORTRAIT / AVATAR SYSTEM
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?9  PORTRAIT / AVATAR SYSTEM
+  ?????????????????????????????????????????????????????? */
 
   .hud-portrait {
     @apply relative shrink-0;
@@ -538,9 +639,9 @@
     box-shadow: 0 0 32px rgba(34, 211, 238, 0.3), 0 0 60px rgba(14, 165, 233, 0.12);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §10  LOADERS & SCORE SYSTEM
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?10  LOADERS & SCORE SYSTEM
+  ?????????????????????????????????????????????????????? */
 
   .hud-loader {
     @apply w-10 h-10;
@@ -572,9 +673,9 @@
     opacity: 0.6;
   }
 
-  /* ══════════════════════════════════════════════════════
-     §11  EVIDENCE BOARD SYSTEM
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?11  EVIDENCE BOARD SYSTEM
+  ?????????????????????????????????????????????????????? */
 
   .hud-evidence {
     @apply hud-panel p-4 transition-all duration-300;
@@ -597,9 +698,9 @@
     box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.42), 0 0 30px rgba(34, 211, 238, 0.08);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §12  ARCHIVE / FILING SYSTEM — L.A. Noire
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?12  ARCHIVE / FILING SYSTEM ??L.A. Noire
+  ?????????????????????????????????????????????????????? */
 
   .archive-panel {
     @apply relative overflow-hidden;
@@ -647,6 +748,299 @@
     @apply absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8;
     background: linear-gradient(180deg, rgba(0, 245, 255, 0.5), rgba(0, 245, 255, 0.1));
   }
+
+  /* ??????*/
+  .archive-page-header {
+    position: relative;
+    padding-left: 1rem;
+    border-left: 2px solid rgba(0, 245, 255, 0.35);
+  }
+  .archive-est-notice {
+    @apply flex items-start gap-3 mt-4 p-3;
+    background: rgba(0, 245, 255, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.12);
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  }
+  .archive-est-notice svg {
+    @apply shrink-0 mt-0.5;
+    color: rgba(0, 245, 255, 0.55);
+  }
+  .archive-est-title {
+    @apply font-mono text-[11px] font-semibold tracking-wide;
+    color: rgba(0, 245, 255, 0.75);
+  }
+  .archive-est-desc {
+    @apply font-mono text-[10px] mt-1 tracking-wide leading-relaxed;
+    color: rgba(196, 200, 212, 0.70);
+  }
+  .archive-est-notice-ready {
+    background: rgba(16, 185, 129, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.18);
+  }
+  .archive-est-notice-ready svg {
+    color: rgba(52, 211, 153, 0.75);
+  }
+  .archive-est-notice-ready .archive-est-title {
+    color: rgba(52, 211, 153, 0.9);
+  }
+  .archive-filter-tabs {
+    @apply flex gap-2 mb-5;
+  }
+  .archive-filter-tab {
+    @apply font-mono text-[10px] px-3 py-2 tracking-wider transition-all duration-200;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    color: rgba(196, 200, 212, 0.65);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.08);
+  }
+  .archive-filter-tab:hover {
+    color: rgba(0, 245, 255, 0.65);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.2);
+  }
+  .archive-filter-tab-active {
+    color: rgba(0, 245, 255, 0.9);
+    background: rgba(0, 245, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.28);
+  }
+  .archive-section-label {
+    @apply flex items-center gap-2 mb-3;
+  }
+  .archive-case-card {
+    @apply pl-5 pr-4 py-4;
+  }
+  .archive-case-active {
+    box-shadow: inset 0 0 0 1px rgba(229, 9, 20, 0.18), inset 3px 0 0 rgba(229, 9, 20, 0.55);
+  }
+  .archive-case-active:hover {
+    box-shadow: inset 0 0 0 1px rgba(229, 9, 20, 0.35), inset 3px 0 0 rgba(229, 9, 20, 0.8), 0 0 20px rgba(229, 9, 20, 0.08);
+  }
+  .archive-case-active .filing-drawer-handle {
+    background: linear-gradient(180deg, rgba(229, 9, 20, 0.7), rgba(229, 9, 20, 0.15));
+  }
+  .archive-case-completed {
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.15), inset 3px 0 0 rgba(16, 185, 129, 0.45);
+    opacity: 0.92;
+  }
+  .archive-case-completed:hover {
+    opacity: 1;
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.3), inset 3px 0 0 rgba(16, 185, 129, 0.65), 0 0 20px rgba(16, 185, 129, 0.06);
+  }
+  .archive-case-completed .filing-drawer-handle {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.6), rgba(16, 185, 129, 0.12));
+  }
+  .archive-status-badge {
+    @apply inline-flex items-center font-mono text-[8px] px-2 py-0.5 tracking-[0.15em] uppercase;
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  }
+  .archive-status-active {
+    background: rgba(229, 9, 20, 0.12);
+    color: rgba(229, 9, 20, 0.85);
+    box-shadow: inset 0 0 0 1px rgba(229, 9, 20, 0.25);
+  }
+  .archive-status-completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: rgba(52, 211, 153, 0.9);
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.22);
+  }
+  .archive-case-score-wrap {
+    @apply inline-flex items-baseline gap-0.5 shrink-0 whitespace-nowrap pl-2;
+  }
+  .archive-case-score {
+    @apply font-mono text-sm font-bold tabular-nums leading-none;
+    color: rgba(52, 211, 153, 0.85);
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+  }
+  .archive-case-score-unit {
+    @apply font-mono text-[10px] leading-none;
+    color: rgba(52, 211, 153, 0.55);
+  }
+  .archive-case-meta {
+    @apply text-[10px] font-mono tracking-wide;
+    color: rgba(196, 200, 212, 0.65);
+  }
+
+  /* ?? ?????????? ?? */
+  .dossier-cover {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, rgba(17, 24, 32, 0.95), rgba(11, 15, 20, 0.98));
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(0, 245, 255, 0.12),
+      0 8px 40px rgba(0, 0, 0, 0.45);
+  }
+  .dossier-cover-grid {
+    @apply grid md:grid-cols-[1.1fr_1fr] gap-0;
+  }
+  .dossier-cover-visual {
+    @apply relative aspect-[4/3] md:aspect-auto md:min-h-[280px] overflow-hidden;
+  }
+  .dossier-cover-img {
+    @apply absolute inset-0 w-full h-full object-cover;
+    filter: saturate(0.85) contrast(1.05);
+  }
+  .dossier-cover-placeholder {
+    @apply absolute inset-0 flex items-center justify-center;
+    background: linear-gradient(160deg, rgba(11, 15, 20, 0.9), rgba(17, 24, 32, 0.95));
+  }
+  .dossier-cover-stamp {
+    @apply absolute top-4 right-4 font-mono text-[9px] tracking-[0.35em] px-3 py-1.5;
+    color: rgba(52, 211, 153, 0.9);
+    background: rgba(16, 185, 129, 0.1);
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.35);
+    transform: rotate(-4deg);
+  }
+  .dossier-cover-meta {
+    @apply p-6 md:p-8 flex flex-col justify-center;
+    border-left: 1px solid rgba(0, 245, 255, 0.08);
+  }
+  .dossier-case-num {
+    @apply font-mono text-xs text-spec-cyan/50 tracking-widest mb-2;
+  }
+  .dossier-case-title {
+    @apply font-display font-black text-xl md:text-2xl text-white leading-tight mb-4;
+    text-shadow: 0 0 24px rgba(0, 245, 255, 0.15);
+  }
+  .dossier-cover-tags {
+    @apply flex flex-wrap items-center gap-2 mb-5;
+  }
+  .dossier-status-closed {
+    @apply inline-flex items-center gap-1.5 font-mono text-[9px] tracking-widest px-2.5 py-1;
+    color: rgba(52, 211, 153, 0.95);
+    background: rgba(16, 185, 129, 0.1);
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.28);
+  }
+  .dossier-score-badge {
+    @apply font-mono text-lg font-bold tabular-nums px-2.5 py-0.5;
+    color: rgba(52, 211, 153, 0.9);
+    background: rgba(16, 185, 129, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.2);
+  }
+  .dossier-cover-stats {
+    @apply grid grid-cols-2 sm:grid-cols-3 gap-4;
+  }
+  .dossier-stat-label {
+    @apply font-mono text-[8px] text-spec-gray/40 tracking-[0.2em] uppercase mb-1;
+  }
+  .dossier-stat-value {
+    @apply font-mono text-xs text-spec-gray/80;
+  }
+  .dossier-summary-panel {
+    background: linear-gradient(180deg, rgba(17, 24, 32, 0.6), rgba(11, 15, 20, 0.8));
+  }
+  .dossier-summary-text {
+    @apply text-sm text-spec-gray/85 leading-relaxed font-mono min-h-[3.5rem];
+  }
+  .dossier-section-title {
+    @apply flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] uppercase mb-4;
+    color: rgba(196, 200, 212, 0.55);
+  }
+  .dossier-truth-card {
+    @apply p-4 relative overflow-hidden;
+    background: rgba(11, 15, 20, 0.65);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+    box-shadow: inset 0 0 0 1px rgba(138, 143, 152, 0.12);
+  }
+  .dossier-truth-red { box-shadow: inset 0 0 0 1px rgba(229, 9, 20, 0.2); }
+  .dossier-truth-cyan { box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.15); }
+  .dossier-truth-gold { box-shadow: inset 0 0 0 1px rgba(212, 168, 83, 0.2); }
+  .dossier-truth-gray { box-shadow: inset 0 0 0 1px rgba(138, 143, 152, 0.15); }
+  .dossier-truth-icon {
+    @apply w-8 h-8 flex items-center justify-center mb-3;
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+    background: rgba(0, 245, 255, 0.06);
+    color: rgba(0, 245, 255, 0.6);
+  }
+  .dossier-truth-red .dossier-truth-icon { background: rgba(229, 9, 20, 0.08); color: rgba(229, 9, 20, 0.7); }
+  .dossier-truth-gold .dossier-truth-icon { background: rgba(212, 168, 83, 0.08); color: rgba(212, 168, 83, 0.75); }
+  .dossier-truth-label {
+    @apply font-mono text-[9px] tracking-[0.2em] uppercase mb-2;
+    color: rgba(196, 200, 212, 0.45);
+  }
+  .dossier-truth-content {
+    @apply text-sm text-spec-gray/80 leading-relaxed;
+  }
+  .dossier-player-row {
+    @apply pb-4 border-b border-spec-cyan/10 last:border-0 last:pb-0;
+  }
+  .dossier-player-wrong {
+    @apply -mx-2 px-2 py-2 rounded-sm;
+    background: rgba(229, 9, 20, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(229, 9, 20, 0.25);
+  }
+  .dossier-player-label {
+    @apply font-mono text-[9px] tracking-[0.2em] uppercase mb-1.5;
+    color: rgba(196, 200, 212, 0.4);
+  }
+  .dossier-player-value {
+    @apply text-sm text-white font-mono;
+  }
+  .dossier-player-wrong .dossier-player-value {
+    @apply text-spec-red line-through decoration-spec-red/60;
+  }
+  .dossier-player-hint {
+    @apply text-xs text-emerald-400/80 font-mono mt-2;
+  }
+  .dossier-player-deduction {
+    @apply text-sm text-spec-gray/75 leading-relaxed;
+  }
+  .dossier-evidence-list {
+    @apply space-y-3;
+  }
+  .dossier-evidence-row {
+    @apply transition-all duration-200;
+  }
+  .dossier-evidence-row:hover {
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.22), 0 0 16px rgba(0, 245, 255, 0.04);
+  }
+  .dossier-evidence-index {
+    @apply shrink-0 w-9 h-9 flex items-center justify-center font-mono text-xs font-black text-spec-cyan/70;
+    background: rgba(0, 245, 255, 0.06);
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.15);
+  }
+  .dossier-evidence-head {
+    @apply flex flex-wrap items-center gap-x-2 gap-y-1 mb-2;
+  }
+  .dossier-evidence-name {
+    @apply font-mono text-sm font-semibold text-white;
+  }
+  .dossier-evidence-loc {
+    @apply inline-flex items-center gap-1 text-[10px] text-spec-gray/60 font-mono px-2 py-0.5;
+    background: rgba(17, 24, 32, 0.6);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.08);
+  }
+  .dossier-evidence-key-badge {
+    @apply inline-block text-[9px] font-mono font-semibold tracking-wider uppercase px-2 py-0.5 text-accent-gold;
+    background: rgba(251, 191, 36, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.25);
+  }
+  .dossier-evidence-significance {
+    @apply text-xs text-spec-cyan/80 leading-relaxed mb-2 pl-3 border-l-2 border-spec-cyan/30;
+  }
+  .dossier-evidence-significance-label {
+    @apply text-[9px] font-mono text-spec-gray/50 tracking-widest uppercase block mb-1;
+  }
+  .dossier-evidence-desc {
+    @apply text-sm text-spec-gray/70 leading-relaxed;
+  }
+  .dossier-evidence-related {
+    @apply flex flex-wrap items-center gap-1.5 mt-3 pt-3 border-t border-spec-cyan/10;
+  }
+  .dossier-evidence-related-label {
+    @apply text-[10px] font-mono text-spec-gray/50 shrink-0;
+  }
+  .dossier-evidence-related-tag {
+    @apply text-[10px] font-mono text-white/80 px-2 py-0.5;
+    background: rgba(17, 24, 32, 0.8);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.1);
+  }
+  .dossier-evidence-inline-img {
+    @apply w-20 h-20 shrink-0 object-cover hidden sm:block;
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.15);
+  }
+
   .file-card {
     @apply relative overflow-hidden transition-all duration-300;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
@@ -658,9 +1052,9 @@
     transform: translateY(-3px);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §13  DATA STREAM / PROGRESS BARS
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?13  DATA STREAM / PROGRESS BARS
+  ?????????????????????????????????????????????????????? */
 
   .data-stream-bar { @apply w-full; }
   .data-stream-track {
@@ -681,9 +1075,9 @@
     animation: data-stream 2s linear infinite;
   }
 
-  /* ══════════════════════════════════════════════════════
-     §14  CRT OVERLAY EFFECTS
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?14  CRT OVERLAY EFFECTS
+  ?????????????????????????????????????????????????????? */
 
   .crt-overlay { mix-blend-mode: overlay; }
   .crt-scanlines {
@@ -703,9 +1097,9 @@
     opacity: 0.7;
   }
 
-  /* ══════════════════════════════════════════════════════
-     §15  FLOW INDICATORS — P5 Style
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?15  FLOW INDICATORS ??P5 Style
+  ?????????????????????????????????????????????????????? */
 
   .flow-dot {
     @apply h-1.5 transition-all;
@@ -721,9 +1115,9 @@
     box-shadow: inset 0 0 0 1px rgba(229, 9, 20, 0.42), 0 0 20px rgba(229, 9, 20, 0.1);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §16  FINGERPRINT SCANNER
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?16  FINGERPRINT SCANNER
+  ?????????????????????????????????????????????????????? */
 
   .fp-scan-line {
     @apply absolute inset-x-0 h-8 pointer-events-none;
@@ -731,9 +1125,9 @@
     animation: fp-scan 2.5s ease-in-out infinite;
   }
 
-  /* ══════════════════════════════════════════════════════
-     §17  ROOM ATMOSPHERE SYSTEM
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?17  ROOM ATMOSPHERE SYSTEM
+  ?????????????????????????????????????????????????????? */
 
   .room-entry    { --room-accent: #E50914; --room-secondary: #111820; }
   .room-auth     { --room-accent: #00F5FF; --room-secondary: #0B0F14; }
@@ -771,9 +1165,9 @@
     );
   }
 
-  /* ══════════════════════════════════════════════════════
-     §18  LOBBY COMMAND CENTER
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?18  LOBBY COMMAND CENTER
+  ?????????????????????????????????????????????????????? */
 
   .lobby-scene { @apply relative w-full; }
   .lobby-tactical-bar {
@@ -801,11 +1195,11 @@
     clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §19  CINEMATIC ENTRY PAGE
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?19  CINEMATIC ENTRY PAGE
+  ?????????????????????????????????????????????????????? */
 
-  /* 电影信箱格效果 */
+  /* ????????*/
   .cinematic-bars::before,
   .cinematic-bars::after {
     content: '';
@@ -819,7 +1213,7 @@
   .cinematic-bars::before { top: 0; }
   .cinematic-bars::after { bottom: 0; }
 
-  /* 终端 boot 序列样式 */
+  /* ?? boot ???? */
   .boot-terminal {
     font-family: 'Share Tech Mono', 'Courier New', monospace;
     font-size: 11px;
@@ -844,7 +1238,7 @@
     box-shadow: 0 0 6px rgba(0, 245, 255, 0.8);
   }
 
-  /* 超大 IB 徽章 */
+  /* ?? IB ?? */
   .ib-emblem {
     position: relative;
     display: flex;
@@ -866,7 +1260,7 @@
     animation: hologram 3s ease-in-out infinite;
   }
 
-  /* 进入按钮 — AAA 级 */
+  /* ???? ??AAA ??*/
   .enter-btn {
     @apply relative overflow-hidden font-display font-black uppercase tracking-[0.2em] text-white;
     padding: 18px 56px;
@@ -919,9 +1313,9 @@
     box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.4);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §20  DEDUCTION & RECONSTRUCTION
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?20  DEDUCTION & RECONSTRUCTION
+  ?????????????????????????????????????????????????????? */
 
   .deduction-graph::after {
     content: '';
@@ -930,9 +1324,9 @@
     background: radial-gradient(ellipse at center, transparent 40%, rgba(11, 15, 20, 0.6) 100%);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §21  HOLOGRAPHIC ELEMENTS
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?21  HOLOGRAPHIC ELEMENTS
+  ?????????????????????????????????????????????????????? */
 
   .hologram-text {
     color: #00F5FF;
@@ -951,9 +1345,9 @@
     animation: hologram 4s ease-in-out infinite;
   }
 
-  /* ══════════════════════════════════════════════════════
-     §22  GLITCH EFFECTS
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?22  GLITCH EFFECTS
+  ?????????????????????????????????????????????????????? */
 
   .glitch-container { position: relative; }
   .glitch-container::before,
@@ -979,12 +1373,12 @@
     opacity: 0.7;
   }
 
-  /* ══════════════════════════════════════════════════════
-     §23  HEADER NAV BAR
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?23  HEADER NAV BAR
+  ?????????????????????????????????????????????????????? */
 
   .game-header {
-    @apply sticky top-0 z-50 flex items-center;
+    @apply fixed top-0 inset-x-0 z-50 flex items-center;
     background: linear-gradient(180deg,
       rgba(11, 15, 20, 0.96) 0%,
       rgba(11, 15, 20, 0.88) 100%
@@ -996,6 +1390,23 @@
       0 4px 24px rgba(0, 0, 0, 0.5);
     height: 52px;
   }
+  .game-header-offset {
+    padding-top: 52px;
+  }
+
+  .interrogate-chat-page {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .interrogate-chat-top {
+    position: sticky;
+    top: 0;
+  }
+  .interrogate-chat-footer {
+    position: sticky;
+    bottom: 0;
+  }
+
   .game-header::before {
     content: '';
     position: absolute;
@@ -1011,9 +1422,9 @@
     );
   }
 
-  /* ══════════════════════════════════════════════════════
-     §24  NEO ICON BOX
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?24  NEO ICON BOX
+  ?????????????????????????????????????????????????????? */
 
   .neo-icon-box {
     @apply flex items-center justify-center;
@@ -1028,9 +1439,9 @@
     box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.45), 0 0 20px rgba(0, 245, 255, 0.1);
   }
 
-  /* ══════════════════════════════════════════════════════
-     §25  LEGACY ALIASES (向下兼容)
-  ══════════════════════════════════════════════════════ */
+  /* ??????????????????????????????????????????????????????
+     ?25  LEGACY ALIASES (????)
+  ?????????????????????????????????????????????????????? */
 
   .neo-card, .panel { @apply hud-panel; }
   .neo-card-hover, .panel-hover { @apply hud-panel-hover; }
@@ -1066,7 +1477,7 @@
 }
 
 @layer utilities {
-  /* HUD 网格背景 */
+  /* HUD ???? */
   .bg-hud-grid {
     background-image:
       linear-gradient(rgba(34, 211, 238, 0.025) 1px, transparent 1px),
@@ -1079,11 +1490,11 @@
       linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
     background-size: 20px 20px;
   }
-  /* 噪波纹理 */
+  /* ???? */
   .bg-noise {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   }
-  /* 对角纹路 */
+  /* ???? */
   .bg-diagonal {
     background-image: repeating-linear-gradient(
       -45deg,
@@ -1091,18 +1502,18 @@
       rgba(0, 245, 255, 0.025) 2px, rgba(0, 245, 255, 0.025) 4px
     );
   }
-  /* 斜切变换 */
+  /* ???? */
   .skew-p5 { transform: skewX(-6deg); }
   .skew-p5-inner { transform: skewX(6deg); }
-  /* 发光文字 */
+  /* ???? */
   .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 245, 255, 0.8), 0 0 20px rgba(0, 245, 255, 0.4); }
   .text-glow-red  { text-shadow: 0 0 10px rgba(229, 9, 20, 0.8), 0 0 20px rgba(229, 9, 20, 0.4); }
   .text-glow-gold { text-shadow: 0 0 10px rgba(212, 168, 83, 0.8), 0 0 20px rgba(212, 168, 83, 0.4); }
 }
 
-/* ══════════════════════════════════════════════════════
+/* ??????????????????????????????????????????????????????
    CSS Custom Keyframes (non-tailwind extras)
-══════════════════════════════════════════════════════ */
+?????????????????????????????????????????????????????? */
 
 @keyframes fp-scan {
   0%, 100% { top: 0; }
@@ -1179,9 +1590,9 @@
   50% { transform: translateY(-8px); }
 }
 
-/* ══════════════════════════════════════════════════════
+/* ??????????????????????????????????????????????????????
    Scrollbar Styling
-══════════════════════════════════════════════════════ */
+?????????????????????????????????????????????????????? */
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }

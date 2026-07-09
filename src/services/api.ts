@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/hooks/useAuthStore';
+import { isTransientApiError } from '@/utils/apiError';
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? '/api';
 
@@ -10,25 +11,44 @@ export class ApiError extends Error {
   }
 }
 
+async function buildAuthHeaders(
+  options: RequestInit,
+  opts?: { skipTokenRefresh?: boolean }
+): Promise<Record<string, string>> {
+  if (!opts?.skipTokenRefresh) {
+    await useAuthStore.getState().refreshToken();
+  }
+  const token = useAuthStore.getState().token;
+  return {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> | undefined),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+async function fetchWithAuthRetry(
+  path: string,
+  options: RequestInit,
+  opts?: { skipTokenRefresh?: boolean }
+): Promise<Response> {
+  let headers = await buildAuthHeaders(options, opts);
+  let response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+
+  if (response.status === 401 && !opts?.skipTokenRefresh) {
+    await useAuthStore.getState().refreshToken();
+    headers = await buildAuthHeaders(options, { skipTokenRefresh: true });
+    response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  }
+
+  return response;
+}
+
 export async function apiRequest<T>(
   path: string,
   options: RequestInit = {},
   opts?: { skipTokenRefresh?: boolean }
 ): Promise<T> {
-  if (!opts?.skipTokenRefresh) {
-    await useAuthStore.getState().refreshToken();
-  }
-  const token = useAuthStore.getState().token;
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string> | undefined),
-  };
-  if (token) headers.Authorization = `Bearer ${token}`;
-
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers,
-  });
+  const response = await fetchWithAuthRetry(path, options, opts);
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -37,23 +57,17 @@ export async function apiRequest<T>(
   return data as T;
 }
 
-export async function apiStream(
-  path: string,
-  body: unknown,
-  onDelta: (content: string) => void
+async function readApiError(response: Response, fallback: string): Promise<ApiError> {
+  const data = await response.json().catch(() => ({}));
+  const message = (data as { error?: string }).error || fallback;
+  return new ApiError(message, response.status);
+}
+
+async function consumeSseStream(
+  response: Response,
+  onDelta: (content: string) => void,
 ): Promise<string> {
-  await useAuthStore.getState().refreshToken();
-  const token = useAuthStore.getState().token;
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (token) headers.Authorization = `Bearer ${token}`;
-
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok || !response.body) {
+  if (!response.body) {
     throw new ApiError('流式请求失败', response.status);
   }
 
@@ -90,4 +104,60 @@ export async function apiStream(
   }
 
   return finalContent;
+}
+
+export async function apiStream(
+  path: string,
+  body: unknown,
+  onDelta: (content: string) => void
+): Promise<string> {
+  const payload = JSON.stringify(body);
+  let lastError: ApiError | null = null;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let receivedDelta = false;
+    const onDeltaTracked = (content: string) => {
+      receivedDelta = true;
+      onDelta(content);
+    };
+
+    try {
+      let headers = await buildAuthHeaders({ method: 'POST', body: payload });
+      let response = await fetch(`${API_BASE}${path}`, {
+        method: 'POST',
+        headers,
+        body: payload,
+      });
+
+      if (response.status === 401) {
+        await useAuthStore.getState().refreshToken();
+        headers = await buildAuthHeaders({ method: 'POST', body: payload }, { skipTokenRefresh: true });
+        response = await fetch(`${API_BASE}${path}`, {
+          method: 'POST',
+          headers,
+          body: payload,
+        });
+      }
+
+      if (!response.ok) {
+        throw await readApiError(response, '流式请求失败');
+      }
+
+      return await consumeSseStream(response, onDeltaTracked);
+    } catch (error) {
+      const apiError =
+        error instanceof ApiError
+          ? error
+          : new ApiError(error instanceof Error ? error.message : String(error), 0);
+      lastError = apiError;
+
+      const transient =
+        receivedDelta === false &&
+        (isTransientApiError(apiError.message) || apiError.status === 503 || apiError.status === 0);
+      if (!transient || attempt >= 2) throw apiError;
+      await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+    }
+  }
+
+  throw lastError ?? new ApiError('审问失败，请稍后重试', 500);
 }

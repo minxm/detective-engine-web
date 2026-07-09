@@ -17,6 +17,9 @@ const PODIUM = [
   { rank: 3, h: 56, icon: Medal, accent: 'text-orange-400/90', bar: 'from-orange-500/25 to-transparent', border: 'border-orange-500/30' },
 ];
 
+/** ??????????????? */
+const LIST_GRID = 'grid grid-cols-[2.5rem_minmax(0,1fr)_3.5rem] gap-x-4 items-center';
+
 function ScoreBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? (value / max) * 100 : 0;
   return (
@@ -51,7 +54,8 @@ export default function LeaderboardPage() {
 
   const top3 = PODIUM.map((m) => ({ meta: m, entry: entries.find((e) => e.rank === m.rank) }));
   const maxScore = entries.length ? Math.max(...entries.map((e) => e.avgScore)) : 100;
-  const rest = entries.slice(3);
+  const showList = entries.length > 4;
+  const rest = showList ? entries.slice(3) : [];
 
   return (
     <RoomAtmosphere room="lobby">
@@ -73,12 +77,13 @@ export default function LeaderboardPage() {
         ) : entries.length === 0 ? (
           <HudPanel solid className="p-16 text-center">
             <Star className="w-8 h-8 text-spec-gray/30 mx-auto mb-4" />
-            <p className="text-spec-gray font-mono text-sm">{t.leaderboard.empty}</p>
+            <p className="text-spec-gray font-mono text-sm">
+              {t.leaderboard.empty}
+            </p>
           </HudPanel>
         ) : (
           <>
-            {/* ??? */}
-            <div className="flex items-end justify-center gap-4 mb-14 px-2">
+            <div className="flex items-end justify-center gap-4 mb-14 px-2 pt-2">
               {top3.map(({ meta, entry }) => {
                 const Icon = meta.icon;
                 return (
@@ -89,14 +94,19 @@ export default function LeaderboardPage() {
                     transition={{ delay: meta.rank * 0.1, type: 'spring', stiffness: 120 }}
                     className={`flex flex-col items-center flex-1 max-w-[120px] ${meta.rank === 1 ? 'order-2 -mt-4' : meta.rank === 2 ? 'order-1' : 'order-3'}`}
                   >
-                    <div className={`relative mb-3 w-14 h-14 flex items-center justify-center border ${meta.border} bg-spec-black/80`} style={{ clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)' }}>
-                      <Icon className={`w-6 h-6 ${meta.accent}`} />
-                      <span className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-spec-red text-white text-[10px] font-black font-mono">
+                    <div className="relative mb-3 w-14 h-14 shrink-0">
+                      <div
+                        className={`w-full h-full flex items-center justify-center border ${meta.border} bg-spec-black/80`}
+                        style={{ clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)' }}
+                      >
+                        <Icon className={`w-6 h-6 ${meta.accent}`} />
+                      </div>
+                      <span className="absolute -top-1.5 -right-1.5 z-10 w-6 h-6 flex items-center justify-center rounded-sm bg-spec-red text-white text-[11px] font-black font-mono leading-none shadow-md">
                         {meta.rank}
                       </span>
                     </div>
-                    <p className="text-xs font-mono text-white truncate w-full text-center mb-1">{entry?.displayName ?? '?'}</p>
-                    <p className={`text-2xl font-black font-mono ${meta.accent}`}>{entry ? Math.round(entry.avgScore) : '?'}</p>
+                    <p className="text-xs font-mono text-white truncate w-full text-center mb-1">{entry?.displayName ?? '-'}</p>
+                    <p className={`text-2xl font-black font-mono ${meta.accent}`}>{entry ? Math.round(entry.avgScore) : '-'}</p>
                     <p className="text-[9px] text-spec-gray font-mono mb-2">{t.leaderboard.avgScore}</p>
                     <div
                       className={`w-full bg-gradient-to-t ${meta.bar} border-t ${meta.border}`}
@@ -107,41 +117,45 @@ export default function LeaderboardPage() {
               })}
             </div>
 
-            {/* ?? */}
-            <div className="flex items-center gap-4 px-4 py-2 mb-2 font-mono text-[9px] text-spec-gray tracking-widest uppercase">
-              <span className="w-8">{t.leaderboard.rank}</span>
-              <span className="flex-1">{t.leaderboard.detective}</span>
-              <span className="w-12 text-right">{t.leaderboard.avgScore}</span>
-            </div>
+            {showList && (
+              <>
+                <div className={`${LIST_GRID} px-4 py-2 mb-2 font-mono text-[9px] text-spec-gray tracking-widest uppercase whitespace-nowrap`}>
+                  <span>{t.leaderboard.rank}</span>
+                  <span>{t.leaderboard.detective}</span>
+                  <span className="text-right">{t.leaderboard.avgScore}</span>
+                </div>
 
-            {/* ?? */}
-            <div className="space-y-1.5">
-              {rest.map((entry, i) => (
-                <motion.div
-                  key={entry.userId}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + i * 0.04 }}
-                >
-                  <HudPanel className="p-4 flex items-center gap-3 group hover:border-spec-cyan/30 transition-colors">
-                    <span className="w-8 font-mono text-sm text-spec-cyan/50 font-bold">{String(entry.rank).padStart(2, '0')}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-mono text-sm text-white truncate group-hover:text-spec-cyan transition-colors">{entry.displayName}</p>
-                      <div className="flex items-center mt-1.5">
-                        <p className="text-[10px] text-spec-gray font-mono shrink-0">
-                          {entry.casesCompleted}{t.leaderboard.casesUnit} · {entry.perfectSolves}{t.leaderboard.perfectUnit}
-                        </p>
-                        <ScoreBar value={entry.avgScore} max={maxScore} />
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-lg font-black font-mono text-spec-cyan">{Math.round(entry.avgScore)}</p>
-                      <p className="text-[9px] text-spec-gray font-mono">{entry.totalScore} {t.leaderboard.totalScore}</p>
-                    </div>
-                  </HudPanel>
-                </motion.div>
-              ))}
-            </div>
+                <div className="space-y-1.5">
+                  {rest.map((entry, i) => (
+                    <motion.div
+                      key={entry.userId}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + i * 0.04 }}
+                    >
+                      <HudPanel className="group hover:border-spec-cyan/30 transition-colors">
+                        <div className={`${LIST_GRID} p-4`}>
+                          <span className="font-mono text-sm text-spec-cyan/50 font-bold">{String(entry.rank).padStart(2, '0')}</span>
+                          <div className="min-w-0">
+                            <p className="font-mono text-sm text-white truncate group-hover:text-spec-cyan transition-colors">{entry.displayName}</p>
+                            <div className="flex items-center mt-1.5">
+                              <p className="text-[10px] text-spec-gray font-mono shrink-0">
+                                {entry.casesCompleted}{t.leaderboard.casesUnit} · {entry.perfectSolves}{t.leaderboard.perfectUnit}
+                              </p>
+                              <ScoreBar value={entry.avgScore} max={maxScore} />
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className="text-lg font-black font-mono text-spec-cyan">{Math.round(entry.avgScore)}</p>
+                            <p className="text-[9px] text-spec-gray font-mono">{entry.totalScore} {t.leaderboard.totalScore}</p>
+                          </div>
+                        </div>
+                      </HudPanel>
+                    </motion.div>
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
       </PageLayout>

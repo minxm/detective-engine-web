@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, LogOut, Radio, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import AuthModal from './AuthModal';
+import { t } from '@/i18n/zh';
 
 /* ─── 路由 → 房间名映射 ─── */
 const ROOM_MAP: Record<string, { label: string; code: string; color: 'cyan' | 'red' | 'gold' }> = {
@@ -18,6 +19,7 @@ const CASE_ROOMS: Record<string, { label: string; code: string; color: 'cyan' | 
   '/interrogate':  { label: '审讯室', code: 'INTERROGATION', color: 'red' },
   '/deduction':    { label: '推理室', code: 'DEDUCTION-ROOM', color: 'cyan' },
   '/reconstruction': { label: '案件重建', code: 'RECONSTRUCTION', color: 'cyan' },
+  '/archive':      { label: '归档卷宗', code: 'CASE-ARCHIVE', color: 'gold' },
   '/result':       { label: '案件评级', code: 'CASE-RESULT', color: 'gold' },
 };
 
@@ -50,6 +52,7 @@ function Breadcrumb({ pathname }: { pathname: string }) {
 
 export default function AppHeader() {
   const { token, nickname, authMode, logout } = useAuthStore();
+  const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
   const [time, setTime] = useState('');
   const location = useLocation();
@@ -65,6 +68,15 @@ export default function AppHeader() {
     return () => clearInterval(id);
   }, []);
 
+  const handleAuthClick = async () => {
+    if (token && authMode !== 'none') {
+      await logout();
+      navigate('/auth', { replace: true });
+      return;
+    }
+    setAuthOpen(true);
+  };
+
   const colorMap = {
     cyan: { dot: 'bg-spec-cyan', text: 'text-spec-cyan', shadow: '0 0 8px rgba(0,245,255,0.7)' },
     red:  { dot: 'bg-spec-red',  text: 'text-spec-red',  shadow: '0 0 8px rgba(229,9,20,0.7)' },
@@ -73,7 +85,7 @@ export default function AppHeader() {
 
   return (
     <>
-      <header className="game-header px-4 md:px-6 relative z-50">
+      <header className="game-header px-4 md:px-6">
 
         {/* 左侧 — Logo + 当前房间 */}
         <div className="flex items-center gap-4 flex-1">
@@ -151,9 +163,9 @@ export default function AppHeader() {
 
         {/* 右侧 — Agent 身份 */}
         <div className="flex items-center gap-3 flex-1 justify-end">
-          {token && authMode !== 'none' && (
+          {token && authMode !== 'none' && nickname && (
             <div className="hidden sm:flex flex-col items-end">
-              <p className="font-mono text-[8px] text-spec-gray/25 tracking-wider">AGENT</p>
+              <p className="font-mono text-[8px] text-spec-gray/25 tracking-wider">探员</p>
               <p
                 className="font-mono text-[10px] font-semibold text-spec-cyan/60 tracking-wider max-w-[120px] truncate"
                 style={{ textShadow: '0 0 8px rgba(0,245,255,0.3)' }}
@@ -165,7 +177,7 @@ export default function AppHeader() {
 
           <button
             type="button"
-            onClick={() => (token && authMode !== 'none' ? void logout() : setAuthOpen(true))}
+            onClick={() => void handleAuthClick()}
             className="group flex items-center gap-2 transition-all duration-200"
             style={{
               padding: '6px 12px',
@@ -180,14 +192,14 @@ export default function AppHeader() {
               <>
                 <LogOut className="w-3 h-3 text-spec-red/60 group-hover:text-spec-red transition-colors" />
                 <span className="font-mono text-[9px] text-spec-red/50 group-hover:text-spec-red transition-colors tracking-wider">
-                  LOGOUT
+                  {t.common.logout}
                 </span>
               </>
             ) : (
               <>
                 <LogIn className="w-3 h-3 text-spec-cyan/60 group-hover:text-spec-cyan transition-colors" />
                 <span className="font-mono text-[9px] text-spec-cyan/50 group-hover:text-spec-cyan transition-colors tracking-wider">
-                  LOGIN
+                  {t.common.login}
                 </span>
               </>
             )}

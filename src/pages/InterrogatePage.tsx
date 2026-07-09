@@ -105,7 +105,8 @@ export default function InterrogatePage() {
       setMessages(nextMessages);
       saveInterrogation(caseData.id, suspect.id, nextMessages);
     } catch (error) {
-      alert((error as Error).message);
+      const { formatApiError } = await import('@/utils/apiError');
+      alert(formatApiError(error, '审问失败，请稍后重试'));
       setMessages((prev) => prev.filter((m) => m.timestamp !== streamTs));
     } finally {
       setIsLoading(false);
@@ -138,38 +139,42 @@ export default function InterrogatePage() {
   }
 
   return (
-    <div className="min-h-screen relative page-shell flex flex-col bg-hud-void">
+    <div className="interrogate-chat-page relative page-shell flex flex-col bg-hud-void">
       <CinematicBackdrop />
       <ParticleBackground />
 
-      <header className="relative z-10 shrink-0">
-        <div className="absolute inset-0 bg-hud-void/90 backdrop-blur-xl border-b border-cyan-500/10" />
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent" />
-        <div className="relative w-full px-4 md:px-6 py-3 flex items-center gap-3">
-          <HudButton variant="icon" onClick={() => navigate(`/case/${id}/interrogate`)}>
-            <ArrowLeft className="w-4 h-4" />
-          </HudButton>
-          <CharacterPortrait name={suspect.name} imageUrl={suspect.imageUrl} size="sm" glow />
-          <div className="flex-1 min-w-0">
-            <p className="hud-label !text-[9px] mb-0.5">{t.flow.interrogate}</p>
-            <p className="font-mono font-bold text-white text-sm truncate">{suspect.name}</p>
-            <p className="text-[10px] text-slate-500 font-mono">{suspect.occupation}</p>
+      <div className="interrogate-chat-top shrink-0 relative z-50">
+        <header className="relative">
+          <div className="absolute inset-0 bg-hud-void/90 backdrop-blur-xl border-b border-cyan-500/10" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent" />
+          <div className="relative w-full px-4 md:px-6 py-3 flex items-center gap-3">
+            <HudButton variant="icon" onClick={() => navigate(`/case/${id}/interrogate`)}>
+              <ArrowLeft className="w-4 h-4" />
+            </HudButton>
+            <CharacterPortrait name={suspect.name} imageUrl={suspect.imageUrl} size="sm" glow />
+            <div className="flex-1 min-w-0">
+              <p className="hud-label !text-[9px] mb-0.5">{t.flow.interrogate}</p>
+              <p className="font-mono font-bold text-white text-sm truncate">{suspect.name}</p>
+              <p className="text-[10px] text-slate-500 font-mono">{suspect.occupation}</p>
+            </div>
+            <span className="hud-badge hud-badge-red !text-[9px]">
+              <Radio className="w-3 h-3 animate-hud-pulse" />
+              {t.interrogate.inProgress}
+            </span>
           </div>
-          <span className="hud-badge hud-badge-red !text-[9px]">
-            <Radio className="w-3 h-3 animate-hud-pulse" />
-            {t.interrogate.inProgress}
-          </span>
-        </div>
-      </header>
+        </header>
 
-      <InterrogationHud
-        suspectName={suspect.name}
-        messageCount={messages.filter((m) => m.role === 'user').length}
-        isStreaming={isLoading}
-      />
+        <InterrogationHud
+          suspectName={suspect.name}
+          messageCount={messages.filter((m) => m.role === 'user').length}
+          isStreaming={isLoading}
+        />
+      </div>
 
-      <div className="relative z-10 flex-1 overflow-y-auto px-4 md:px-6 py-6 w-full space-y-3">
-        {messages.map((msg) => (
+      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto px-4 md:px-6 py-6 w-full space-y-3">
+        {messages.map((msg) => {
+          if (!msg.content && msg.role === 'assistant') return null;
+          return (
           <motion.div
             key={msg.timestamp}
             initial={{ opacity: 0, y: 8, filter: 'blur(2px)' }}
@@ -177,10 +182,11 @@ export default function InterrogatePage() {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div className={`max-w-[88%] ${msg.role === 'user' ? 'hud-chat-user' : 'hud-chat-suspect'}`}>
-              {msg.content || (isLoading ? '?' : '')}
+              {msg.content}
             </div>
           </motion.div>
-        ))}
+          );
+        })}
         {isLoading && (
           <div className="flex gap-1 px-2">
             {[0, 1, 2].map((d) => (
@@ -191,7 +197,7 @@ export default function InterrogatePage() {
         <div ref={messagesEndRef} />
       </div>
 
-      <footer className="relative z-10 shrink-0">
+      <footer className="interrogate-chat-footer shrink-0 relative z-50">
         <div className="absolute inset-0 bg-hud-void/95 backdrop-blur-xl border-t border-cyan-500/10" />
         <div className="relative w-full px-4 md:px-6 py-4 flex gap-2">
           <div className="flex-1 min-w-0">

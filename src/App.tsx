@@ -9,6 +9,8 @@ import EntryPage from '@/pages/EntryPage';
 import AuthPage from '@/pages/AuthPage';
 import LobbyPage from '@/pages/LobbyPage';
 import ArchivePage from '@/pages/ArchivePage';
+import NewCasePage from '@/pages/NewCasePage';
+import ActiveCasesPage from '@/pages/ActiveCasesPage';
 import GeneratingPage from '@/pages/GeneratingPage';
 import CasePage from '@/pages/CasePage';
 import EvidencePage from '@/pages/EvidencePage';
@@ -17,6 +19,7 @@ import InterrogateHubPage from '@/pages/InterrogateHubPage';
 import InterrogatePage from '@/pages/InterrogatePage';
 import DeductionPage from '@/pages/DeductionPage';
 import ReconstructionPage from '@/pages/ReconstructionPage';
+import CaseArchivePage from '@/pages/CaseArchivePage';
 import ResultPage from '@/pages/ResultPage';
 import LeaderboardPage from '@/pages/LeaderboardPage';
 import AdminPage from '@/pages/AdminPage';
@@ -30,22 +33,26 @@ import {
 
 function AppRoutes() {
   const location = useLocation();
-  const hideChrome = ['/', '/auth'].includes(location.pathname) || location.pathname.includes('/interrogate/');
   const isInterrogateChat = /\/case\/[^/]+\/interrogate\/[^/]+/.test(location.pathname);
+  const hideChrome = ['/', '/auth'].includes(location.pathname) || isInterrogateChat;
+  const showHeader = !hideChrome;
 
   return (
     <>
       <CrtOverlay />
-      {!hideChrome && !isInterrogateChat && <CinematicBackdrop />}
+      {!hideChrome && <CinematicBackdrop />}
       {!hideChrome && <CursorGlow />}
-      {!hideChrome && !isInterrogateChat && <AppHeader />}
+      {showHeader && <AppHeader />}
       <ScrollToTop />
+      <div className={showHeader ? 'game-header-offset' : undefined}>
       <Routes>
           {/* 全局流程 */}
           <Route path="/" element={<EntryPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/lobby" element={<LobbyPage />} />
           <Route path="/archive" element={<ArchivePage />} />
+          <Route path="/new-case" element={<NewCasePage />} />
+          <Route path="/active" element={<ActiveCasesPage />} />
           <Route path="/generating/:jobId" element={<GeneratingPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/admin" element={<AdminPage />} />
@@ -58,6 +65,7 @@ function AppRoutes() {
           <Route path="/case/:id/interrogate/:suspectId" element={<InterrogatePage />} />
           <Route path="/case/:id/deduction" element={<DeductionPage />} />
           <Route path="/case/:id/reconstruction" element={<ReconstructionPage />} />
+          <Route path="/case/:id/archive" element={<CaseArchivePage />} />
           <Route path="/case/:id/result" element={<ResultPage />} />
 
           {/* 旧路由重定向 */}
@@ -67,6 +75,7 @@ function AppRoutes() {
           <Route path="/interrogate/:id" element={<LegacyInterrogateRedirect />} />
           <Route path="/result/:id" element={<LegacyResultRedirect />} />
       </Routes>
+      </div>
     </>
   );
 }

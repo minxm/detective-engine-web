@@ -8,7 +8,7 @@ import HudPanel from '@/components/hud/HudPanel';
 import HudButton from '@/components/hud/HudButton';
 import { scoreCase } from '@/services/case';
 import { advanceFlowStep, CASE_FLOW_PATHS } from '@/utils/case-flow';
-import { getProgress, saveProgress, useCaseStore } from '@/utils/case-store';
+import { getProgress, saveProgress, saveEvaluation, flushSessionSync, useCaseStore } from '@/utils/case-store';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { t } from '@/i18n/zh';
 
@@ -30,12 +30,14 @@ export default function ReconstructionPage() {
       }
       const res = await fetchCaseDataAndScore(id, deduction, nickname);
       setEvaluation(res.evaluation);
+      saveEvaluation(id, res.evaluation);
       saveProgress({
         ...(progress!),
         endTime: Date.now(),
         score: res.evaluation.score,
         flowStep: 'closed',
       });
+      void flushSessionSync(id);
       advanceFlowStep(id, 'closed');
       navigate(CASE_FLOW_PATHS.closed(id));
       return false;
@@ -138,5 +140,19 @@ async function fetchCaseDataAndScore(caseId: string, deduction: string, displayN
     caseData = res.caseData;
   }
   if (!caseData) throw new Error(t.case.notFound);
-  return scoreCase({ caseData, userDeduction: deduction, displayName });
+  const progress = getProgress(caseId);
+  return scoreCase({
+    caseData,
+    userDeduction: deduction,
+    displayName,
+    progress: progress
+      ? {
+          discoveredEvidence: progress.discoveredEvidence,
+          interrogatedSuspects: progress.interrogatedSuspects,
+          notes: progress.notes,
+          startTime: progress.startTime,
+          flowStep: progress.flowStep,
+        }
+      : undefined,
+  });
 }

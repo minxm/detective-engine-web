@@ -9,11 +9,7 @@ VITE_TCB_ENV_ID=your-env-id
 VITE_TCB_REGION=ap-shanghai
 ```
 
-后端需配置对应的 `TCB_*` 变量以验证 `accessToken`。支持：
-
-- CloudBase 匿名登录
-- 用户名密码登录 / 注册
-- 访客模式（降级）
+后端需配置对应的 `TCB_*` 变量以验证 `accessToken`。支持用户名密码登录 / 注册。
 
 ## 目录
 

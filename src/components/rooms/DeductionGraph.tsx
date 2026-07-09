@@ -12,16 +12,71 @@ const VIEW_H = 320;
 interface GraphNode {
   id: string;
   label: string;
-  type: 'center' | 'evidence' | 'suspect';
+  type: 'center' | 'evidence' | 'suspect' | 'victim';
   x: number;
   y: number;
   active?: boolean;
   imageUrl?: string;
 }
 
-function polar(cx: number, cy: number, r: number, i: number, total: number, angleOffset = 0) {
-  const angle = (i / Math.max(total, 1)) * Math.PI * 2 - Math.PI / 2 + angleOffset;
-  return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+type PeripheralSlot =
+  | { kind: 'victim'; id: string; label: string; imageUrl?: string }
+  | { kind: 'evidence'; id: string; label: string; imageUrl?: string; active: boolean }
+  | { kind: 'suspect'; id: string; label: string; imageUrl?: string };
+
+const RADIUS = {
+  evidence: 76,
+  victim: 102,
+  suspect: 126,
+} as const;
+
+/** 受害人置顶，证据与嫌疑人交错排列，再均匀分布到整圈 */
+function buildPeripheralSlots(caseData: CaseData, discoveredIds: string[]): PeripheralSlot[] {
+  const slots: PeripheralSlot[] = [
+    {
+      kind: 'victim',
+      id: 'victim',
+      label: caseData.victim.name,
+      imageUrl: resolveAssetUrl(caseData.victim.imageUrl),
+    },
+  ];
+
+  const evidence = caseData.evidence.map((e) => ({
+    kind: 'evidence' as const,
+    id: e.id,
+    label: e.name,
+    imageUrl: resolveAssetUrl(e.imageUrl),
+    active: discoveredIds.includes(e.id),
+  }));
+  const suspects = caseData.suspects.map((s) => ({
+    kind: 'suspect' as const,
+    id: s.id,
+    label: s.name,
+    imageUrl: resolveAssetUrl(s.imageUrl),
+  }));
+
+  let ei = 0;
+  let si = 0;
+  while (ei < evidence.length || si < suspects.length) {
+    if (ei < evidence.length) slots.push(evidence[ei++]);
+    if (si < suspects.length) slots.push(suspects[si++]);
+  }
+
+  return slots;
+}
+
+function slotToNode(cx: number, cy: number, slot: PeripheralSlot, index: number, total: number): GraphNode {
+  const angle = (index / total) * Math.PI * 2 - Math.PI / 2;
+  const r = RADIUS[slot.kind];
+  return {
+    id: slot.id,
+    label: slot.label,
+    type: slot.kind,
+    x: cx + Math.cos(angle) * r,
+    y: cy + Math.sin(angle) * r,
+    active: slot.kind === 'evidence' ? slot.active : true,
+    imageUrl: slot.imageUrl,
+  };
 }
 
 export default function DeductionGraph({
@@ -33,40 +88,13 @@ export default function DeductionGraph({
 }) {
   const { nodes, edges } = useMemo(() => {
     const cx = VIEW_W / 2;
-    const cy = VIEW_H / 2 - 10;
+    const cy = VIEW_H / 2;
+    const peripheralSlots = buildPeripheralSlots(caseData, discoveredIds);
+
     const ns: GraphNode[] = [
       { id: 'truth', label: t.deduction.graphCenter, type: 'center', x: cx, y: cy, active: true },
+      ...peripheralSlots.map((slot, i) => slotToNode(cx, cy, slot, i, peripheralSlots.length)),
     ];
-
-    const evidenceCount = caseData.evidence.length;
-    const suspectCount = caseData.suspects.length;
-
-    caseData.evidence.forEach((e, i) => {
-      const p = polar(cx, cy, 78, i, evidenceCount);
-      ns.push({
-        id: e.id,
-        label: e.name,
-        type: 'evidence',
-        x: p.x,
-        y: p.y,
-        active: discoveredIds.includes(e.id),
-        imageUrl: resolveAssetUrl(e.imageUrl),
-      });
-    });
-
-    const suspectOffset = evidenceCount > 0 && suspectCount > 0 ? Math.PI / Math.max(evidenceCount, suspectCount) : 0;
-    caseData.suspects.forEach((s, i) => {
-      const p = polar(cx, cy, 128, i, suspectCount, suspectOffset);
-      ns.push({
-        id: s.id,
-        label: s.name,
-        type: 'suspect',
-        x: p.x,
-        y: p.y,
-        active: true,
-        imageUrl: resolveAssetUrl(s.imageUrl),
-      });
-    });
 
     const es: { from: string; to: string; active: boolean }[] = [];
     for (const n of ns) {
@@ -116,7 +144,7 @@ export default function DeductionGraph({
 
         <motion.circle
           cx={VIEW_W / 2}
-          cy={VIEW_H / 2 - 10}
+          cy={VIEW_H / 2}
           r={52}
           fill="none"
           stroke="rgba(0,245,255,0.12)"
@@ -135,6 +163,24 @@ export default function DeductionGraph({
           {n.type === 'center' && (
             <div className="relative flex items-center justify-center w-14 h-14 rounded-full border border-spec-red/60 bg-spec-red/15 shadow-[0_0_24px_rgba(229,9,20,0.25)]">
               <span className="font-mono text-[10px] text-spec-red font-bold tracking-widest">{n.label}</span>
+            </div>
+          )}
+
+          {n.type === 'victim' && (
+            <div className="flex flex-col items-center">
+              <div
+                className="relative rounded-sm ring-1 ring-spec-red/55 ring-offset-2 ring-offset-spec-black/80"
+                style={{ boxShadow: '0 0 18px rgba(229,9,20,0.2)' }}
+              >
+                <CharacterPortrait name={n.label} imageUrl={n.imageUrl} size="sm" />
+                <span className="absolute -bottom-1 inset-x-0 text-center font-mono text-[6px] tracking-widest text-white/90 bg-spec-red/70 py-px">
+                  {t.case.deceased}
+                </span>
+              </div>
+              <span className="mt-2 font-mono text-[7px] text-spec-red/70 tracking-wider">{t.case.victim}</span>
+              <span className="mt-1 max-w-[72px] truncate text-center font-mono text-[8px] text-spec-red/80 font-semibold">
+                {n.label}
+              </span>
             </div>
           )}
 
@@ -162,7 +208,7 @@ export default function DeductionGraph({
             </div>
           )}
 
-          {n.type !== 'center' && (
+          {n.type !== 'center' && n.type !== 'victim' && (
             <span
               className={`mt-1.5 max-w-[72px] truncate text-center font-mono text-[8px] ${
                 n.active ? 'text-spec-gray' : 'text-spec-gray/40'

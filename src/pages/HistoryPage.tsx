@@ -17,22 +17,30 @@ export default function HistoryPage() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [stats, setStats] = useState<UserStats>(EMPTY_STATS);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const load = async () => {
+  const load = async (targetPage = page) => {
     setLoading(true);
     try {
-      const [historyRes, statsRes] = await Promise.all([fetchHistory(), fetchUserStats()]);
+      const [historyRes, statsRes] = await Promise.all([
+        fetchHistory({ page: targetPage, limit: 10 }),
+        fetchUserStats(),
+      ]);
       setEntries(historyRes.entries);
+      setPage(historyRes.page);
+      setTotalPages(historyRes.totalPages);
       setStats(statsRes.stats);
     } catch {
       setEntries([]);
       setStats(EMPTY_STATS);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => { void load(page); }, [page]);
 
   const statItems = t.history.stats.map((label, i) => ({
     label,
@@ -43,7 +51,7 @@ export default function HistoryPage() {
     <PageLayout maxWidth="max-w-3xl">
       <div className="flex items-center justify-between mb-10">
         <BackButton />
-        <HudButton variant="icon" onClick={load}>
+        <HudButton variant="icon" onClick={() => void load(page)}>
           <RefreshCw className="w-4 h-4" />
         </HudButton>
       </div>
@@ -68,11 +76,15 @@ export default function HistoryPage() {
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-5 h-5 animate-spin text-cyan-500/50" /></div>
       ) : entries.length === 0 ? (
-        <HudPanel solid className="p-12 text-center text-slate-500 text-sm font-mono">{t.history.empty}</HudPanel>
+        <HudPanel solid className="p-12 text-center text-slate-500 text-sm font-mono">
+          {t.history.empty}
+        </HudPanel>
       ) : (
         <div className="space-y-2">
           {entries.map((entry, i) => {
-            const href = entry.status === 'completed' ? `/result/${entry.caseId}` : `/investigate/${entry.caseId}`;
+            const href = entry.status === 'completed'
+              ? `/case/${entry.caseId}/archive`
+              : `/case/${entry.caseId}`;
             return (
               <motion.div key={entry.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}>
                 <Link to={href} className="block group">
@@ -84,7 +96,7 @@ export default function HistoryPage() {
                       <div className="flex-1 min-w-0">
                         <p className="font-mono text-sm font-semibold text-white truncate group-hover:text-cyan-300 transition-colors">{entry.caseTitle}</p>
                         <p className="text-[10px] text-slate-500 font-mono mt-0.5">
-                          #{entry.caseId.slice(-6).toUpperCase()} ∑ {entry.rating}{entry.score != null ? ` ∑ ${entry.score}${t.history.scoreUnit}` : ''}
+                          #{entry.caseId.slice(-6).toUpperCase()} ù {entry.rating}{entry.score != null ? ` ù ${entry.score}${t.history.scoreUnit}` : ''}
                         </p>
                       </div>
                       <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-colors" />
@@ -94,6 +106,20 @@ export default function HistoryPage() {
               </motion.div>
             );
           })}
+        </div>
+      )}
+
+      {!loading && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-8">
+          <HudButton variant="ghost" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+            {t.history.prevPage}
+          </HudButton>
+          <span className="font-mono text-xs text-slate-500 tabular-nums">
+            {t.history.pageInfo.replace('{page}', String(page)).replace('{totalPages}', String(totalPages))}
+          </span>
+          <HudButton variant="ghost" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+            {t.history.nextPage}
+          </HudButton>
         </div>
       )}
     </PageLayout>

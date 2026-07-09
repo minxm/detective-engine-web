@@ -1,18 +1,24 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Image, Search, Check, Cpu, Radio } from 'lucide-react';
+import { Brain, Image, Search, Check, Cpu, Radio, AlertTriangle } from 'lucide-react';
 import PageLayout from '@/components/ui/PageLayout';
 import HudPanel from '@/components/hud/HudPanel';
 import DataStreamBar from '@/components/hud/DataStreamBar';
 import CinematicBackdrop from '@/components/CinematicBackdrop';
 import RoomAtmosphere from '@/components/rooms/RoomAtmosphere';
-import { fetchCaseStatus } from '@/services/case';
-import { saveCaseData, scrollWindowToTop } from '@/utils/case-store';
+import { fetchCaseById, fetchCaseStatus } from '@/services/case';
+import { loadCaseData, saveCaseData, scrollWindowToTop } from '@/utils/case-store';
+import { parseGeneratingError } from '@/utils/generatingError';
+import {
+  GENERATING_ASSIGN_JOB_ID,
+  type InstantGeneratingState,
+} from '@/utils/navigate-generating';
+import type { CaseData } from '@/types';
 import { t } from '@/i18n/zh';
 
 const STEP_ICONS = [Search, Brain, Image] as const;
-const STEP_PROGRESS = [15, 55, 90];
+const MAX_POLL_ERRORS = 5;
 
 const AI_MESSAGES: Record<string, string[]> = {
   pending: ['QUERYING CASE DATABASE…', 'INITIALIZING AI ENGINE…', 'ALLOCATING RESOURCES…'],
@@ -20,37 +26,165 @@ const AI_MESSAGES: Record<string, string[]> = {
   images: ['RENDERING CRIME SCENE…', 'GENERATING SUSPECT PORTRAITS…', 'PROCESSING VISUAL DATA…'],
 };
 
+/** 预置卷宗：快速过渡动效（约 1.2s） */
+const INVENTORY_TIMELINE = [
+  { stage: 'pending', progress: 20, at: 0 },
+  { stage: 'generating', progress: 55, at: 350 },
+  { stage: 'images', progress: 85, at: 750 },
+  { stage: 'ready', progress: 100, at: 1200 },
+] as const;
+
+function stageToStep(stage: string): number {
+  if (stage === 'images' || stage === 'ready') return 2;
+  if (stage === 'generating') return 1;
+  return 0;
+}
+
+function readInstantState(state: unknown): InstantGeneratingState | null {
+  if (!state || typeof state !== 'object') return null;
+  const s = state as Partial<InstantGeneratingState>;
+  if (s.instant && s.caseId) {
+    return { instant: true, caseId: s.caseId, caseData: s.caseData };
+  }
+  return null;
+}
+
 export default function GeneratingPage() {
   const { jobId = '' } = useParams();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [stage, setStage] = useState('pending');
+  const [progress, setProgress] = useState(5);
   const [msgIdx, setMsgIdx] = useState(0);
+  const [error, setError] = useState('');
+  const pollErrors = useRef(0);
   const difficulty = searchParams.get('difficulty') ?? 'medium';
+  const instantPayload = useMemo(() => readInstantState(location.state), [location.state]);
+  const instantCaseId = instantPayload?.caseId ?? null;
+  const isInstantFlow = jobId === GENERATING_ASSIGN_JOB_ID && instantCaseId !== null;
 
   useEffect(() => {
+    if (jobId === GENERATING_ASSIGN_JOB_ID && !instantCaseId) {
+      navigate('/archive?action=new', { replace: true });
+    }
+  }, [jobId, instantCaseId, navigate]);
+
+  useEffect(() => {
+    if (!isInstantFlow || !instantCaseId) return;
+
     let cancelled = false;
+    const timers: number[] = [];
+    setError('');
+    setStage('pending');
+    setProgress(5);
+
+    const finish = async (caseId: string, caseData: CaseData) => {
+      await saveCaseData(caseData);
+      scrollWindowToTop();
+      navigate(`/case/${caseId}`, { replace: true });
+    };
+
+    void (async () => {
+      try {
+        let caseData = instantPayload?.caseData ?? null;
+        if (!caseData) {
+          caseData = await loadCaseData(instantCaseId);
+        }
+        if (!caseData) {
+          const res = await fetchCaseById(instantCaseId);
+          caseData = res.caseData;
+        }
+        if (!caseData) {
+          setError(t.generating.loadFail);
+          return;
+        }
+
+        for (const { stage: nextStage, progress: nextProgress, at } of INVENTORY_TIMELINE) {
+          timers.push(
+            window.setTimeout(() => {
+              if (cancelled) return;
+              setStage(nextStage);
+              setProgress(nextProgress);
+              if (nextStage === 'ready') {
+                void finish(instantCaseId, caseData!);
+              }
+            }, at),
+          );
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(parseGeneratingError(err, t.generating.loadFail));
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, [isInstantFlow, instantCaseId, instantPayload?.caseData, navigate]);
+
+  useEffect(() => {
+    if (isInstantFlow || !jobId || jobId === GENERATING_ASSIGN_JOB_ID) return;
+
+    let cancelled = false;
+    pollErrors.current = 0;
+    setError('');
+
+    const handleReady = async (caseId?: string, caseData?: CaseData | null) => {
+      let data = caseData;
+      if (!data && caseId) {
+        try {
+          const res = await fetchCaseById(caseId);
+          data = res.caseData;
+        } catch {
+          /* fallback below */
+        }
+      }
+      if (!data) {
+        setError(t.generating.loadFail);
+        return;
+      }
+      await saveCaseData(data);
+      scrollWindowToTop();
+      navigate(`/case/${caseId ?? data.id}`);
+    };
+
     const poll = async () => {
       try {
         const data = await fetchCaseStatus(jobId);
         if (cancelled) return;
+        pollErrors.current = 0;
+        setError('');
+
         setStage(data.stage);
-        if (data.status === 'ready' && data.caseData) {
-          await saveCaseData(data.caseData);
-          scrollWindowToTop();
-          navigate(`/case/${data.caseId ?? data.caseData.id}`);
-        } else if (data.status === 'failed') {
-          alert(data.error || t.generating.fail);
-          navigate('/');
+        if (typeof data.progress === 'number') {
+          setProgress((prev) => Math.max(prev, data.progress!));
         }
-      } catch {
-        if (!cancelled) setTimeout(poll, 2000);
+
+        if (data.status === 'ready') {
+          setProgress(100);
+          await handleReady(data.caseId, data.caseData);
+        } else if (data.status === 'failed') {
+          setError(parseGeneratingError(data.error, t.generating.fail));
+        }
+      } catch (err) {
+        if (cancelled) return;
+        pollErrors.current += 1;
+        if (pollErrors.current >= MAX_POLL_ERRORS) {
+          setError(parseGeneratingError(err, t.generating.statusError));
+        }
       }
     };
+
     poll();
     const timer = setInterval(poll, 2500);
-    return () => { cancelled = true; clearInterval(timer); };
-  }, [jobId, navigate]);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [jobId, isInstantFlow, navigate]);
 
   /* Cycle AI messages */
   useEffect(() => {
@@ -60,10 +194,52 @@ export default function GeneratingPage() {
     return () => clearInterval(id);
   }, [stage]);
 
-  const activeStep = stage === 'generating' ? 1 : stage === 'images' ? 2 : 0;
-  const progress = STEP_PROGRESS[activeStep] ?? 5;
+  /* Smooth progress creep while waiting */
+  useEffect(() => {
+    if (error) return;
+    const id = setInterval(() => {
+      setProgress((prev) => {
+        const cap = stage === 'pending' ? 12 : stage === 'generating' ? 45 : stage === 'images' ? 88 : 95;
+        if (prev >= cap) return prev;
+        return prev + 1;
+      });
+    }, 3000);
+    return () => clearInterval(id);
+  }, [stage, error]);
+
+  const activeStep = stageToStep(stage);
   const currentMsgs = AI_MESSAGES[stage] ?? AI_MESSAGES['pending']!;
   const currentMsg = currentMsgs[msgIdx % currentMsgs.length] ?? '';
+
+  if (error) {
+    return (
+      <RoomAtmosphere room="lobby">
+        <CinematicBackdrop variant="lobby" />
+        <PageLayout maxWidth="max-w-lg" py="py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <HudPanel solid className="p-8 text-center">
+              <div className="flex justify-center mb-4">
+                <AlertTriangle className="w-10 h-10 text-red-400/80" />
+              </div>
+              <p className="font-mono text-xs text-spec-gray/40 tracking-wider mb-2">{t.generating.failTitle}</p>
+              <p className="font-mono text-sm text-red-400/90 mb-6 leading-relaxed">{error}</p>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="hud-btn-primary px-6 py-2.5 font-mono text-xs tracking-wider"
+              >
+                {t.generating.statusRetry}
+              </button>
+            </HudPanel>
+          </motion.div>
+        </PageLayout>
+      </RoomAtmosphere>
+    );
+  }
 
   return (
     <RoomAtmosphere room="lobby">

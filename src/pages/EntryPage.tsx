@@ -3,17 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ParticleBackground from '@/components/ParticleBackground';
 import CinematicBackdrop from '@/components/CinematicBackdrop';
+import { t } from '@/i18n/zh';
 
 /* ─── Boot sequence lines ─── */
-const BOOT_LINES = [
-  { text: 'INTELLIGENCE BUREAU MAINFRAME v4.7.2', delay: 0 },
-  { text: 'INITIALIZING SECURE CONNECTION...', delay: 180 },
-  { text: 'BIOMETRIC PROTOCOL LOADED ✓', delay: 360 },
-  { text: 'AI DEDUCTION ENGINE ONLINE ✓', delay: 540 },
-  { text: 'CASE DATABASE SYNC COMPLETE ✓', delay: 720 },
-  { text: 'NEURAL INTERFACE READY ✓', delay: 900 },
-  { text: 'CLASSIFIED ACCESS GRANTED — SEC-LVL-5', delay: 1100 },
-];
+const BOOT_LINES = t.entry.bootLines.map((text, i) => ({
+  text,
+  delay: i * 180,
+}));
 
 /* ─── Scan corner component ─── */
 function ScanCorners({ active }: { active: boolean }) {
@@ -239,7 +235,7 @@ export default function EntryPage() {
           transition={{ delay: 0.15, duration: 0.5 }}
         >
           <div className="h-px w-16 bg-gradient-to-r from-transparent to-spec-cyan/50" />
-          <span className="hud-label text-[9px]">CLASSIFIED · SEC-LVL-5 · AUTHORIZED ONLY</span>
+          <span className="hud-label text-[9px]">{t.entry.classified}</span>
           <div className="h-px w-16 bg-gradient-to-l from-transparent to-spec-cyan/50" />
         </motion.div>
 
@@ -256,24 +252,24 @@ export default function EntryPage() {
         >
           {/* 背景大字 — 装饰 */}
           <div
-            className="absolute -inset-4 font-display font-black uppercase text-[clamp(4rem,15vw,9rem)] text-white/[0.015] select-none leading-none pointer-events-none"
+            className="absolute -inset-4 font-display font-black text-[clamp(4rem,15vw,9rem)] text-white/[0.015] select-none leading-none pointer-events-none"
             style={{ letterSpacing: '0.15em' }}
             aria-hidden
           >
-            <span className="inline-block skew-x-[-4deg]">INTEL</span>
+            <span className="inline-block skew-x-[-4deg]">{t.entry.watermark}</span>
           </div>
 
           <div className="p5-title-wrap">
             <h1 className="p5-title text-[clamp(2.2rem,6vw,4rem)]">
-              FUTURE
-              <span className="p5-title-red ml-3">INTEL</span>
+              {t.entry.titleLine1}
+              <span className="p5-title-red ml-3">{t.entry.titleAccent1}</span>
             </h1>
           </div>
           <div className="p5-title-wrap">
             <h1 className="p5-title text-[clamp(2.2rem,6vw,4rem)]">
-              LIGENCE
+              {t.entry.titleLine2}
               <span className="text-spec-cyan ml-2" style={{ textShadow: '0 0 30px rgba(0,245,255,0.7)' }}>
-                BUREAU
+                {t.entry.titleAccent2}
               </span>
             </h1>
           </div>
@@ -281,12 +277,12 @@ export default function EntryPage() {
 
         {/* 副标题 */}
         <motion.p
-          className="font-mono text-[11px] text-spec-gray/60 tracking-[0.35em] uppercase mb-8 max-w-xs"
+          className="font-mono text-[11px] text-spec-gray/60 tracking-[0.2em] mb-8 max-w-xs"
           initial={{ opacity: 0 }}
           animate={{ opacity: phase === 'ready' ? 1 : 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
         >
-          AI SPECIAL INVESTIGATOR SYSTEM · 2047
+          {t.entry.subtitle}
         </motion.p>
 
         {/* 分割线 */}
@@ -322,7 +318,7 @@ export default function EntryPage() {
             <span className="relative z-10 flex items-center gap-4">
               {/* 左装饰 */}
               <span className="w-6 h-px bg-white/40 group-hover:w-10 transition-all duration-300" />
-              ENTER BUREAU
+              {t.entry.enterBtn}
               <span className="w-6 h-px bg-white/40 group-hover:w-10 transition-all duration-300" />
             </span>
           </button>
@@ -330,7 +326,7 @@ export default function EntryPage() {
 
         {/* 底部状态 */}
         <motion.p
-          className="mt-8 font-mono text-[8px] text-spec-gray/35 tracking-[0.4em] uppercase"
+          className="mt-8 font-mono text-[8px] text-spec-gray/35 tracking-[0.15em]"
           initial={{ opacity: 0 }}
           animate={{ opacity: phase === 'ready' ? 1 : 0 }}
           transition={{ delay: 0.9, duration: 0.5 }}
@@ -339,17 +335,17 @@ export default function EntryPage() {
             animate={{ opacity: [1, 0.3, 1] }}
             transition={{ duration: 2.5, repeat: Infinity }}
           >
-            ● LIVE
+            {t.entry.footerLive}
           </motion.span>
-          {' '}· SECURE CHANNEL ESTABLISHED · ENCRYPTION 4096-BIT
+          {' '}· {t.entry.footerChannel}
         </motion.p>
       </motion.div>
 
       {/* ── 四角 HUD 状态数据 ── */}
-      <HudStatusLine x="left" y="top" label="UNIT" value="IB-MAINFRAME-04" />
-      <HudStatusLine x="right" y="top" label="STATUS" value="OPERATIONAL" />
-      <HudStatusLine x="left" y="bottom" label="PROTOCOL" value="SEC-LEVEL-ALPHA" />
-      <HudStatusLine x="right" y="bottom" label="TIMESTAMP" value="2047.03.15 · 03:17" />
+      <HudStatusLine x="left" y="top" label={t.entry.hudUnit} value={t.entry.hudUnitValue} />
+      <HudStatusLine x="right" y="top" label={t.entry.hudStatus} value={t.entry.hudStatusValue} />
+      <HudStatusLine x="left" y="bottom" label={t.entry.hudProtocol} value={t.entry.hudProtocolValue} />
+      <HudStatusLine x="right" y="bottom" label={t.entry.hudTimestamp} value={t.entry.hudTimestampValue} />
 
       {/* ── 中央扫描角线 ── */}
       <ScanCorners active={phase === 'ready'} />

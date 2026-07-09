@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, ChevronLeft } from 'lucide-react';
 import PageLayout from '@/components/ui/PageLayout';
 import LoadingScreen from '@/components/ui/LoadingScreen';
@@ -10,6 +10,7 @@ import { useCaseLoader } from '@/hooks/useCaseLoader';
 import {
   advanceFlowStep,
   CASE_FLOW_PATHS,
+  getMaxFlowStep,
   nextFlowStep,
   prevFlowStep,
 } from '@/utils/case-flow';
@@ -36,7 +37,11 @@ export default function CaseRoomShell({
   hidePrev?: boolean;
 }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { caseData, loading, notFound } = useCaseLoader(caseId, step);
+  const isClosedArchive =
+    searchParams.get('view') === 'archive' ||
+    (getMaxFlowStep(caseId) === 'closed' && step === 'open');
 
   const goNext = async () => {
     if (onNext) {
@@ -75,7 +80,12 @@ export default function CaseRoomShell({
   return (
     <RoomAtmosphere room={step === 'closed' ? 'closed' : step}>
       <PageLayout maxWidth="max-w-5xl">
-      <CaseFlowBar current={step} />
+      {!isClosedArchive && <CaseFlowBar current={step} />}
+      {isClosedArchive && (
+        <p className="font-mono text-[10px] text-emerald-400/70 tracking-widest mb-4">
+          {t.history.statusCompleted} · {t.hud.caseFile}
+        </p>
+      )}
       {children(caseData)}
       <div className="flex items-center justify-between mt-10 pt-6 border-t border-spec-cyan/10 gap-3">
         {!hidePrev && prevFlowStep(step) ? (
@@ -87,7 +97,7 @@ export default function CaseRoomShell({
             <ChevronLeft className="w-4 h-4" /> {t.flow.backArchive}
           </HudButton>
         )}
-        {!hideNext && next && (
+        {!hideNext && next && !isClosedArchive && (
           <HudButton onClick={goNext}>
             {nextLabel ?? t.flow.next} <ArrowRight className="w-4 h-4" />
           </HudButton>

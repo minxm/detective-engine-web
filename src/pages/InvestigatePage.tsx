@@ -68,9 +68,22 @@ export default function InvestigatePage() {
     if (!caseData || !deduction.trim()) return;
     setIsSubmitting(true);
     try {
-      const res = await scoreCase({ caseData, userDeduction: deduction, displayName: nickname });
-      setEvaluation(res.evaluation);
       const progress = getProgress(caseData.id);
+      const res = await scoreCase({
+        caseData,
+        userDeduction: deduction,
+        displayName: nickname,
+        progress: progress
+          ? {
+              discoveredEvidence: progress.discoveredEvidence,
+              interrogatedSuspects: progress.interrogatedSuspects,
+              notes: progress.notes,
+              startTime: progress.startTime,
+              flowStep: progress.flowStep,
+            }
+          : undefined,
+      });
+      setEvaluation(res.evaluation);
       saveProgress({
         ...(progress ?? { caseId: caseData.id, discoveredEvidence, interrogatedSuspects: [], notes: '', startTime: Date.now() }),
         endTime: Date.now(),

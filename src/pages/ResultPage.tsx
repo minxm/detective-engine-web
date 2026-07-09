@@ -226,7 +226,7 @@ export default function ResultPage() {
               <HudButton onClick={() => navigate('/archive')}>
                 {t.result.again} <ArrowRight className="w-4 h-4" />
               </HudButton>
-              <HudButton variant="ghost" onClick={() => navigate(`/case/${id}`)}>
+              <HudButton variant="ghost" onClick={() => navigate(`/case/${id}/archive`)}>
                 {t.result.viewCase}
               </HudButton>
             </motion.div>

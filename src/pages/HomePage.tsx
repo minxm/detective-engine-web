@@ -6,7 +6,8 @@ import PageLayout from '@/components/ui/PageLayout';
 import HudPanel from '@/components/hud/HudPanel';
 import HudButton from '@/components/hud/HudButton';
 import { createCase } from '@/services/case';
-import { saveCaseData, scrollWindowToTop } from '@/utils/case-store';
+import { navigateToGenerating } from '@/utils/navigate-generating';
+import GenerationTimeNotice from '@/components/archive/GenerationTimeNotice';
 import { t } from '@/i18n/zh';
 
 const DIFF_ICONS = [Target, Scan, Flame, Skull] as const;
@@ -23,18 +24,7 @@ export default function HomePage() {
     setGeneratingStatus(t.home.matching);
     try {
       const data = await createCase(selectedDifficulty);
-      if ('caseData' in data && data.source === 'inventory') {
-        setGeneratingStatus(t.home.ready);
-        await saveCaseData(data.caseData);
-        scrollWindowToTop();
-        navigate(`/case/${data.caseId}`);
-        return;
-      }
-      if ('jobId' in data) {
-        setGeneratingStatus(t.home.generating);
-        scrollWindowToTop();
-        navigate(`/generating/${data.jobId}?difficulty=${encodeURIComponent(selectedDifficulty)}`);
-      }
+      navigateToGenerating(navigate, selectedDifficulty, data);
     } catch (error) {
       alert(`${t.home.genFail}${(error as Error).message}`);
     } finally {
@@ -60,7 +50,7 @@ export default function HomePage() {
 
           <div className="hud-divider max-w-md mb-6" />
           <p className="text-base text-slate-400 leading-relaxed max-w-lg">{t.home.subtitle}</p>
-          <p className="hud-meta mt-4">{t.home.estTime}</p>
+          <GenerationTimeNotice />
         </motion.div>
 
         <motion.div

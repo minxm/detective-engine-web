@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Archive, Trophy, AlertTriangle, Radio, Target, ChevronRight, Zap } from 'lucide-react';
+import { Archive, Trophy, AlertTriangle, Radio, Target, ChevronRight, Zap, Activity } from 'lucide-react';
 import CinematicBackdrop from '@/components/CinematicBackdrop';
 import ParticleBackground from '@/components/ParticleBackground';
 import { useAuthStore } from '@/hooks/useAuthStore';
-import { fetchHistory } from '@/services/history';
+import { fetchHistoryStats } from '@/services/history';
 import { t } from '@/i18n/zh';
 
 /* ─── Stat Block ─── */
@@ -155,6 +155,8 @@ function TacticalFeed({ items }: { items: string[] }) {
 
 export default function LobbyPage() {
   const nickname = useAuthStore((s) => s.nickname);
+  const authMode = useAuthStore((s) => s.authMode);
+  const isAdmin = useAuthStore((s) => s.isAdmin);
   const [activeCases, setActiveCases] = useState(0);
   const [completedCases, setCompletedCases] = useState(0);
   const [time, setTime] = useState('');
@@ -172,14 +174,13 @@ export default function LobbyPage() {
   }, []);
 
   useEffect(() => {
-    void fetchHistory()
+    void fetchHistoryStats()
       .then((res) => {
-        const entries = res.entries ?? [];
-        setActiveCases(entries.filter((e) => e.status !== 'completed').length);
-        setCompletedCases(entries.filter((e) => e.status === 'completed').length);
+        setActiveCases(res.stats.active);
+        setCompletedCases(res.stats.completed);
       })
       .catch(() => { setActiveCases(0); setCompletedCases(0); });
-  }, []);
+  }, [authMode]);
 
   const threatLevel = Math.min(97, activeCases * 18 + 12);
   const totalCases = activeCases + completedCases;
@@ -189,7 +190,7 @@ export default function LobbyPage() {
     `${activeCases} 个案件进行中`,
     'AI 推理引擎：运行正常',
     '安全链路：已建立',
-    '生物特征：已验证',
+    '访问凭证：有效',
     `累计破案：${completedCases} 件 | 成功率：${totalCases ? Math.round((completedCases / totalCases) * 100) : 0}%`,
   ];
 
@@ -248,7 +249,7 @@ export default function LobbyPage() {
 
         {/* ── 顶部 Agent 标识 ── */}
         <motion.div
-          className="pt-8 pb-6 lg:pb-8 flex items-end justify-between gap-4 flex-wrap"
+          className="pt-8 pb-6 flex items-end justify-between gap-4 flex-wrap"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -278,29 +279,140 @@ export default function LobbyPage() {
           </div>
         </motion.div>
 
-        {/* ── 三栏布局 ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_220px_minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_240px_minmax(0,1fr)] gap-6 lg:gap-x-8 lg:items-start pb-10">
+        {/* ── PC 两列 / 移动单列 ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] lg:gap-8 lg:items-start pb-10">
 
-          {/* 左栏 — 统计 */}
+          {/* ═══ 左/主列：CTA + 功能入口 ═══ */}
           <motion.div
-            className="space-y-3 lg:min-w-0"
+            className="space-y-3 min-w-0"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
+            {/* 开始任务 — 大 CTA 卡片（PC 端突出展示） */}
+            <Link
+              to="/new-case"
+              className="group relative block overflow-hidden transition-all duration-300"
+              style={{
+                padding: '20px 28px',
+                background: 'linear-gradient(135deg, rgba(229,9,20,0.12), rgba(17,24,32,0.85))',
+                clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
+                boxShadow: '0 0 0 1px rgba(229,9,20,0.35), 0 0 40px rgba(229,9,20,0.08)',
+              }}
+            >
+              <motion.div
+                className="flex items-center gap-5"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35, duration: 0.5 }}
+              >
+                <div
+                  className="shrink-0 w-12 h-12 flex items-center justify-center"
+                  style={{
+                    clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)',
+                    background: 'rgba(229,9,20,0.12)',
+                    boxShadow: 'inset 0 0 0 1px rgba(229,9,20,0.4)',
+                  }}
+                >
+                  <Zap
+                    className="w-6 h-6 text-spec-red group-hover:drop-shadow-neon-red transition-all duration-300"
+                    style={{ filter: 'drop-shadow(0 0 4px rgba(229,9,20,0.4))' }}
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3
+                    className="font-display font-black text-base tracking-[0.2em] uppercase text-white group-hover:text-spec-red transition-colors duration-200"
+                    style={{ textShadow: '0 0 16px rgba(229,9,20,0.3)' }}
+                  >
+                    开始任务
+                  </h3>
+                  <p className="font-mono text-[11px] text-spec-gray/50 mt-0.5 leading-snug">
+                    AI 生成专属案件，选择难度立即出发
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 font-mono text-[9px] text-spec-red/60 tracking-wider group-hover:text-spec-red transition-colors shrink-0">
+                  进入 <ChevronRight className="w-3 h-3" />
+                </div>
+              </motion.div>
+              {/* 光晕 */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{ background: 'linear-gradient(135deg, rgba(229,9,20,0.06), transparent)' }}
+              />
+              <div
+                className="absolute left-0 top-3 bottom-3 w-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ background: 'linear-gradient(180deg, transparent, rgba(229,9,20,0.9), transparent)' }}
+              />
+            </Link>
+
+            {/* 功能入口 */}
+            <p className="hud-label mt-5 mb-2">功能入口</p>
+
+            <ModuleCard
+              icon={Archive}
+              title={t.flow.modules[0]?.title ?? '案件档案库'}
+              desc={t.flow.modules[0]?.desc ?? '查阅所有案件档案，开启新调查'}
+              to="/archive"
+              color="cyan"
+              delay={0.35}
+              badge="PRIMARY"
+            />
+            <ModuleCard
+              icon={Target}
+              title="进行中案件"
+              desc="查看进行中的案件，继续未完成的调查"
+              to="/active"
+              color="red"
+              delay={0.4}
+              badge={activeCases > 0 ? `${activeCases}` : undefined}
+            />
+            <ModuleCard
+              icon={Trophy}
+              title={t.flow.modules[1]?.title ?? '排行榜'}
+              desc={t.flow.modules[1]?.desc ?? '全球侦探排行榜，比较战绩'}
+              to="/leaderboard"
+              color="cyan"
+              delay={0.45}
+            />
+            {isAdmin && (
+              <ModuleCard
+                icon={Activity}
+                title={t.admin.title}
+                desc={t.admin.subtitle}
+                to="/admin"
+                color="red"
+                delay={0.5}
+                badge="ADMIN"
+              />
+            )}
+          </motion.div>
+
+          {/* ═══ 右/侧边栏：统计 + 系统状态 ═══ */}
+          <motion.div
+            className="space-y-3 min-w-0 mt-6 lg:mt-0"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.25, duration: 0.6 }}
+          >
             <p className="hud-label mb-2">任务统计</p>
 
             <div className="grid grid-cols-2 gap-2">
-              <StatBlock label="进行中" value={activeCases} sub="案件" color="red" delay={0.25} />
-              <StatBlock label="已破获" value={completedCases} sub="案件" color="cyan" delay={0.3} />
+              <StatBlock label="进行中" value={activeCases} sub="案件" color="red" delay={0.3} />
+              <StatBlock label="已破获" value={completedCases} sub="案件" color="cyan" delay={0.35} />
               <StatBlock
                 label="成功率"
-                value={totalCases ? `${Math.round((completedCases / totalCases) * 100)}%` : '—'}
+                value={totalCases ? `${Math.round((completedCases / totalCases) * 100)}%` : '0%'}
                 sub="SUCCESS"
                 color="gold"
-                delay={0.35}
+                delay={0.4}
               />
-              <StatBlock label="等级" value={completedCases >= 10 ? 'S' : completedCases >= 5 ? 'A' : 'B'} sub="特工" color="cyan" delay={0.4} />
+              <StatBlock
+                label="等级"
+                value={completedCases >= 10 ? 'S' : completedCases >= 5 ? 'A' : 'B'}
+                sub="特工"
+                color="cyan"
+                delay={0.45}
+              />
             </div>
 
             {/* 威胁仪表盘 */}
@@ -381,7 +493,8 @@ export default function LobbyPage() {
                 <div key={s.name} className="flex items-center justify-between">
                   <span className="font-mono text-[9px] text-spec-gray/40">{s.name}</span>
                   <div className="flex items-center gap-1.5">
-                    <div className={`w-1 h-1 rounded-full ${s.ok ? 'bg-green-400' : 'bg-spec-red'}`}
+                    <div
+                      className={`w-1 h-1 rounded-full ${s.ok ? 'bg-green-400' : 'bg-spec-red'}`}
                       style={{ boxShadow: s.ok ? '0 0 4px rgba(74,222,128,0.8)' : '0 0 4px rgba(229,9,20,0.8)' }}
                     />
                     <span
@@ -394,120 +507,12 @@ export default function LobbyPage() {
                 </div>
               ))}
             </motion.div>
-          </motion.div>
-
-          {/* 中栏 — AI 核心（PC 面板 / 移动端保持原样） */}
-          <motion.div
-            className="flex flex-col items-center justify-start pt-4 lg:pt-0 lg:sticky lg:top-20 lg:w-full lg:min-w-0"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <p className="hud-label mb-4 lg:mb-2 text-center lg:text-left w-full">AI核心 · 监控</p>
-
-            <div className="flex flex-col items-center w-full max-w-[200px] lg:max-w-none lg:p-6 lg:min-h-[320px] lg:justify-between lg:relative">
-              {/* PC 面板样式 — 通过 lg 类覆盖 */}
-              <div
-                className="hidden lg:block absolute inset-0 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(11,15,20,0.8), rgba(17,24,32,0.6))',
-                  clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
-                  boxShadow: 'inset 0 0 0 1px rgba(0,245,255,0.1)',
-                }}
-              />
-              <div className="hidden lg:block absolute left-0 top-1/2 -translate-x-full w-8 h-px bg-gradient-to-l from-spec-cyan/20 to-transparent" />
-              <div className="hidden lg:block absolute right-0 top-1/2 translate-x-full w-8 h-px bg-gradient-to-r from-spec-cyan/20 to-transparent" />
-
-              <div className="relative z-10 text-center space-y-1 lg:space-y-2 lg:flex-1 lg:flex lg:flex-col lg:justify-center lg:py-4">
-                <div
-                  className="hidden lg:flex mx-auto w-16 h-16 items-center justify-center mb-2"
-                  style={{
-                    background: 'rgba(0,245,255,0.06)',
-                    clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)',
-                    boxShadow: 'inset 0 0 0 1px rgba(0,245,255,0.2)',
-                  }}
-                >
-                  <Zap className="w-6 h-6 text-spec-cyan" style={{ filter: 'drop-shadow(0 0 6px rgba(0,245,255,0.6))' }} />
-                </div>
-                <p
-                  className="font-display font-black text-xs tracking-[0.25em] text-spec-cyan"
-                  style={{ textShadow: '0 0 12px rgba(0,245,255,0.6)' }}
-                >
-                  AI · 推理引擎
-                </p>
-                <p className="font-mono text-[8px] text-spec-gray/35 tracking-widest">
-                  分析就绪 · 系统正常
-                </p>
-              </div>
-
-              <Link
-                to="/archive?action=new"
-                className="group relative z-10 flex items-center justify-center gap-3 w-full py-4 lg:hover:scale-[1.02] transition-all duration-200"
-                style={{
-                  clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
-                  background: 'linear-gradient(180deg, rgba(229,9,20,0.15), rgba(229,9,20,0.06))',
-                  boxShadow: '0 0 0 1px rgba(229,9,20,0.5), 0 0 30px rgba(229,9,20,0.12)',
-                }}
-              >
-                <motion.div
-                  className="flex items-center justify-center gap-3 w-full"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.5 }}
-                >
-                  <Zap className="w-4 h-4 text-spec-red group-hover:drop-shadow-[0_0_6px_rgba(229,9,20,0.8)] transition-all" />
-                  <span
-                    className="font-display font-black text-xs tracking-[0.2em] uppercase text-white"
-                    style={{ textShadow: '0 0 12px rgba(229,9,20,0.5)' }}
-                  >
-                    开始任务
-                  </span>
-                </motion.div>
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* 右栏 — 功能入口 */}
-          <motion.div
-            className="space-y-3 lg:min-w-0"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-          >
-            <p className="hud-label mb-2">功能入口</p>
-
-            <ModuleCard
-              icon={Archive}
-              title={t.flow.modules[0]?.title ?? '案件档案库'}
-              desc={t.flow.modules[0]?.desc ?? '查阅所有案件档案，开启新调查'}
-              to="/archive"
-              color="cyan"
-              delay={0.35}
-              badge="PRIMARY"
-            />
-            <ModuleCard
-              icon={Target}
-              title="进行中案件"
-              desc="查看进行中的案件，继续调查"
-              to="/archive?filter=active"
-              color="red"
-              delay={0.4}
-              badge={activeCases > 0 ? `${activeCases}` : undefined}
-            />
-            <ModuleCard
-              icon={Trophy}
-              title={t.flow.modules[1]?.title ?? '排行榜'}
-              desc={t.flow.modules[1]?.desc ?? '全球侦探排行榜，比较战绩'}
-              to="/leaderboard"
-              color="cyan"
-              delay={0.45}
-            />
 
             {/* 近期动态 */}
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55, duration: 0.5 }}
+              transition={{ delay: 0.65, duration: 0.5 }}
               className="p-4 space-y-2"
               style={{
                 background: 'rgba(11,15,20,0.6)',
