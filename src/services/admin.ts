@@ -58,7 +58,6 @@ export type LoginAuditItem = {
 export type DailyActivityRow = {
   date: string;
   loginCount: number;
-  onlineCount: number;
 };
 
 export type Dashboard = {

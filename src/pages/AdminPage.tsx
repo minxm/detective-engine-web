@@ -750,12 +750,11 @@ export default function AdminPage() {
                 <p className="font-mono text-xs text-spec-cyan font-bold mb-1">{t.admin.dailyStatsTitle}</p>
                 <p className="font-mono text-[9px] text-spec-gray/40 mb-4 tracking-wide">{t.admin.dailyStatsHint}</p>
                 <AdminTable
-                  headers={[t.admin.dailyStatsDate, t.admin.dailyStatsLogin, t.admin.dailyStatsOnline]}
+                  headers={[t.admin.dailyStatsDate, t.admin.dailyStatsLogin]}
                   empty={t.admin.dailyStatsEmpty}
                   rows={dashboard.dailyActivity.map((row) => [
                     row.date,
                     row.loginCount,
-                    row.onlineCount,
                   ])}
                 />
               </div>
