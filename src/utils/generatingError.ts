@@ -3,7 +3,7 @@ const GENERATING_ERROR_ZH: Array<[pattern: RegExp, message: string]> = [
   [/查询生成状态失败/i, '无法查询生成进度，请稍后重试'],
   [/案件已生成但加载失败|load.*fail/i, '案件已生成但加载失败，请返回大厅重试'],
   [/HTTP 404|not found/i, '请求的资源不存在，请返回大厅重试'],
-  [/HTTP 5\d\d|internal server error/i, '服务暂时不可用，请稍后重试'],
+  [/504|CLOUD_FUNCTION_INVOCATION_TIMEOUT|gateway timeout/i, '边缘网关超时，请稍后重试或刷新页面'],
   [/HTTP 4\d\d|bad request|unauthorized|forbidden/i, '请求失败，请稍后重试'],
   [/network|timeout|ECONNREFUSED|ETIMEDOUT|fetch failed|socket/i, '网络异常，请检查连接后重试'],
   [/rate limit|too many requests|429/i, 'AI 服务请求过于频繁，请稍后再试'],
