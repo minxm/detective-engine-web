@@ -7,6 +7,7 @@ import CrtOverlay from '@/components/hud/CrtOverlay';
 import ScrollToTop from '@/components/ScrollToTop';
 import EntryPage from '@/pages/EntryPage';
 import AuthPage from '@/pages/AuthPage';
+import WechatCallbackPage from '@/pages/WechatCallbackPage';
 import LobbyPage from '@/pages/LobbyPage';
 import ArchivePage from '@/pages/ArchivePage';
 import NewCasePage from '@/pages/NewCasePage';
@@ -34,7 +35,7 @@ import {
 function AppRoutes() {
   const location = useLocation();
   const isInterrogateChat = /\/case\/[^/]+\/interrogate\/[^/]+/.test(location.pathname);
-  const hideChrome = ['/', '/auth'].includes(location.pathname) || isInterrogateChat;
+  const hideChrome = ['/', '/auth', '/auth/wechat-callback'].includes(location.pathname) || isInterrogateChat;
   const showHeader = !hideChrome;
 
   return (
@@ -49,6 +50,7 @@ function AppRoutes() {
           {/* 全局流程 */}
           <Route path="/" element={<EntryPage />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/auth/wechat-callback" element={<WechatCallbackPage />} />
           <Route path="/lobby" element={<LobbyPage />} />
           <Route path="/archive" element={<ArchivePage />} />
           <Route path="/new-case" element={<NewCasePage />} />

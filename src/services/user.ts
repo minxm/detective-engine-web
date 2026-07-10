@@ -2,11 +2,10 @@ import { apiRequest } from './api';
 import type { UserStats } from '@/types';
 
 export async function fetchAuthConfig() {
-  return apiRequest<{ success: boolean; auth: { enabled: boolean; envId: string; region: string } }>(
-    '/auth/config',
-    {},
-    { skipTokenRefresh: true }
-  );
+  return apiRequest<{
+    success: boolean;
+    auth: { enabled: boolean; envId: string; region: string; providers?: string[] };
+  }>('/auth/config', {}, { skipTokenRefresh: true });
 }
 
 export async function sendHeartbeat() {
