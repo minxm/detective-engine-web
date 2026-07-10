@@ -14,8 +14,6 @@ const AUTH_ERROR_ZH: Array<[pattern: RegExp, message: string]> = [
   [/pure.*digit|纯数字/i, '用户名不能为纯数字'],
   [/network|timeout|fetch failed|socket disconnected|secure tls/i, '网络连接不稳定，正在重试…'],
   [/rate limit|too many/i, '请求过于频繁，请稍后再试'],
-  [/not_found|provider/i, '微信账号尚未绑定，请重试登录'],
-  [/access_denied|user denied/i, '你已取消微信授权'],
 ];
 
 export function isEmailAccount(value: string): boolean {

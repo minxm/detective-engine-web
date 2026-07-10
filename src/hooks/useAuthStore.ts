@@ -4,9 +4,10 @@ import {
   getAccessToken,
   getCloudBaseLoginState,
   isCloudBaseConfigured,
+  loginWithPassword,
   logoutCloudBase,
+  registerWithPassword,
 } from '@/lib/cloudbase';
-import { startWechatLogin, completeWechatLogin as finishWechatLogin } from '@/lib/wechat-auth';
 import { fetchAuthConfig, fetchAdminStatus, sendHeartbeat } from '@/services/user';
 import { inflight } from '@/utils/inflight';
 
@@ -22,18 +23,16 @@ interface AuthState {
   setNickname: (nickname: string) => void;
   initAuth: () => Promise<void>;
   refreshAdminStatus: () => Promise<void>;
-  loginWithWechat: () => Promise<void>;
-  completeWechatLogin: (code: string) => Promise<void>;
+  loginCloudBasePassword: (
+    username: string,
+    password: string,
+    register?: boolean
+  ) => Promise<void>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
 }
 
 let bootstrapPromise: Promise<void> | null = null;
-
-function readNickname(loginState: Awaited<ReturnType<typeof getCloudBaseLoginState>>) {
-  const user = loginState?.user as { nickName?: string; username?: string; name?: string } | undefined;
-  return user?.nickName || user?.username || user?.name || '微信用户';
-}
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -79,22 +78,36 @@ export const useAuthStore = create<AuthState>()(
 
             set({ cloudBaseEnabled: enabled });
 
-            if (enabled) {
+            const { token, authMode } = get();
+
+            // 恢复本地认证会话（token 以 local. 开头表示由后端本地认证系统签发）
+            if (authMode === 'cloudbase' && token?.startsWith('local.')) {
+              await get().refreshAdminStatus();
+              return;
+            }
+
+            // 恢复 CloudBase 会话（兼容旧版 CloudBase token）
+            if (enabled && authMode === 'cloudbase' && token && !token.startsWith('local.')) {
               const state = await getCloudBaseLoginState();
               if (state) {
                 const freshToken = await getAccessToken();
                 if (freshToken) {
+                  const user = state.user as { nickName?: string; username?: string };
                   set({
                     token: freshToken,
                     authMode: 'cloudbase',
-                    nickname: readNickname(state) || get().nickname,
+                    nickname: user?.nickName || user?.username || get().nickname,
                   });
                   await get().refreshAdminStatus();
                   return;
                 }
               }
+              // CloudBase 会话已过期
+              set({ token: null, authMode: 'none', nickname: '', isAdmin: false, role: 'user' });
+              return;
             }
 
+            // 未认证
             set({
               token: null,
               authMode: 'none',
@@ -111,19 +124,11 @@ export const useAuthStore = create<AuthState>()(
         return bootstrapPromise;
       },
 
-      loginWithWechat: async () => {
-        await startWechatLogin();
-      },
-
-      completeWechatLogin: async (code) => {
-        const state = await finishWechatLogin(code);
-        const freshToken = await getAccessToken();
-        if (!freshToken) throw new Error('登录失败，未获取到访问令牌');
-        set({
-          token: freshToken,
-          authMode: 'cloudbase',
-          nickname: readNickname(state),
-        });
+      loginCloudBasePassword: async (username, password, register) => {
+        const result = register
+          ? await registerWithPassword(username, password)
+          : await loginWithPassword(username, password);
+        set({ token: result.accessToken, authMode: 'cloudbase', nickname: username });
         await get().refreshAdminStatus();
         await sendHeartbeat().catch(() => undefined);
       },
@@ -134,8 +139,10 @@ export const useAuthStore = create<AuthState>()(
       },
 
       refreshToken: async () => {
-        const { authMode } = get();
-        if (authMode !== 'cloudbase') return get().token;
+        const { authMode, token } = get();
+        if (authMode !== 'cloudbase') return token;
+        // 本地 token 长期有效，无需刷新
+        if (token?.startsWith('local.')) return token;
         const freshToken = await getAccessToken();
         if (freshToken) set({ token: freshToken });
         return freshToken;
@@ -143,6 +150,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'detective-auth',
+      // 持久化 token（本地认证 token 需要跨页面保留）
       partialize: (state) => ({
         nickname: state.nickname,
         authMode: state.authMode,

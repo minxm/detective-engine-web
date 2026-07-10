@@ -5,7 +5,7 @@ import { useCaseStore } from '@/utils/case-store';
 import { sendHeartbeat } from '@/services/user';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 
-const PUBLIC_PATHS = ['/', '/auth', '/auth/wechat-callback'];
+const PUBLIC_PATHS = ['/', '/auth'];
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.includes(pathname);
