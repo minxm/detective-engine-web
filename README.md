@@ -39,17 +39,11 @@ npm run dev
 
 GitHub Push → EdgeOne Pages 托管 `dist/`（本地 `npm run build:app` 预构建）。
 
-生产环境前端**直连** CloudBase 云托管 API，无需 EdgeOne 反代：
+生产环境通过 `middleware.js` 将同源 `/api` 反代到 CloudBase 云托管，避免跨域：
 
 ```env
 # .env.production
-VITE_API_BASE=https://<云托管默认域名>/api
+VITE_API_BASE=/api
 ```
 
-云托管默认域名在 API 仓库 Actions 部署日志或 [云托管控制台](https://console.cloud.tencent.com/tcb/env/cloudrun) 查看，形如：
-
-`https://detective-engine-api-xxxxx.ap-shanghai.run.tcloudbase.com`
-
-修改 `.env.production` 后执行 `npm run build:app`，提交 `dist/` 再推送。
-
-`middleware.js` 仍保留用于本地或 EdgeOne 反代场景，当前生产不依赖。
+若云托管默认域名变更，请同步修改 `middleware.js` 中的 `API_ORIGIN`，然后重新构建并部署。

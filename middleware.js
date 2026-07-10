@@ -1,5 +1,5 @@
-/** EdgeOne 边缘反代：同源 /api 转发到 SCF，避免浏览器跨域 */
-const API_ORIGIN = 'https://1450903261-2c7ic9hgxq.ap-shanghai.tencentscf.com';
+/** EdgeOne 边缘反代：同源 /api 转发到云托管，避免浏览器跨域 */
+const API_ORIGIN = 'https://detective-engine-api-279923-8-1450903261.sh.run.tcloudbase.com';
 
 export function middleware(context) {
   const { request, rewrite, next } = context;
