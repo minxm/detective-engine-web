@@ -51,7 +51,7 @@ export default function ResultPage() {
     <RoomAtmosphere room="closed">
       <CinematicBackdrop />
 
-      <div className="min-h-screen relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden">
         {/* 背景光晕 — 随评级变色 */}
         <div
           className="fixed inset-0 pointer-events-none"

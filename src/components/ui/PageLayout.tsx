@@ -16,7 +16,7 @@ export default function PageLayout({
   py?: string;
 }) {
   return (
-    <div className={`min-h-screen relative page-shell ${className}`}>
+    <div className={`flex-1 min-h-0 relative page-shell ${className}`}>
       {particles && <ParticleBackground />}
       <MotionPage className={`relative z-10 container mx-auto px-4 md:px-6 ${py} ${maxWidth}`}>
         {children}

@@ -115,7 +115,7 @@ export default function InterrogatePage() {
 
   if (pageError) {
     return (
-      <div className="min-h-screen flex items-center justify-center page-shell">
+      <div className="flex-1 flex items-center justify-center page-shell">
         <CinematicBackdrop />
         <ParticleBackground />
         <div className="relative z-10 max-w-sm mx-4 w-full">
@@ -130,7 +130,7 @@ export default function InterrogatePage() {
 
   if (!caseData || !suspect) {
     return (
-      <div className="min-h-screen page-shell relative">
+      <div className="flex-1 page-shell relative">
         <CinematicBackdrop />
         <ParticleBackground />
         <LoadingScreen label={t.interrogate.loading} />

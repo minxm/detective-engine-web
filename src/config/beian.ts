@@ -5,5 +5,5 @@ export const ICP_BEIAN_URL = 'https://beian.miit.gov.cn/';
 /** 公安备案号与查询 recordcode（数字部分） */
 export const PSB_BEIAN_NUMBER = '鄂公网安备42011602001303号';
 export const PSB_BEIAN_RECORD_CODE = '42011602001303';
-export const PSB_BEIAN_URL = `http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${PSB_BEIAN_RECORD_CODE}`;
-export const PSB_BEIAN_ICON_URL = 'http://www.beian.gov.cn/img/ghs.png';
+export const PSB_BEIAN_URL = `https://beian.mps.gov.cn/#/query/webSearch?code=${PSB_BEIAN_RECORD_CODE}`;
+export const PSB_BEIAN_ICON_URL = 'https://qcloudimg.tencent-cloud.cn/raw/eed02831a0e201b8d794c8282c40cf2e.png';

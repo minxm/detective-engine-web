@@ -31,7 +31,7 @@ export default function LoadingScreen({ label = t.common.loading }: { label?: st
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-8 px-8">
+    <div className="flex flex-col items-center justify-center flex-1 min-h-[50vh] gap-8 px-8">
 
       {/* IB Logo */}
       <motion.div

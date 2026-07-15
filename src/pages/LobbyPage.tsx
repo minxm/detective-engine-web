@@ -195,7 +195,7 @@ export default function LobbyPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-spec-black relative z-10 overflow-hidden page-shell">
+    <div className="flex-1 bg-spec-black relative z-10 overflow-hidden page-shell">
       <CinematicBackdrop variant="lobby" />
       <ParticleBackground />
 

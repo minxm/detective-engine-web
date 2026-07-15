@@ -39,13 +39,13 @@ function AppRoutes() {
   const showHeader = !hideChrome;
 
   return (
-    <>
+    <div className="app-shell">
       <CrtOverlay />
       {!hideChrome && <CinematicBackdrop />}
       {!hideChrome && <CursorGlow />}
       {showHeader && <AppHeader />}
       <ScrollToTop />
-      <div className={showHeader ? 'game-header-offset' : undefined}>
+      <main className={`app-main${showHeader ? ' game-header-offset' : ''}`}>
       <Routes>
           {/* 全局流程 */}
           <Route path="/" element={<EntryPage />} />
@@ -76,9 +76,9 @@ function AppRoutes() {
           <Route path="/interrogate/:id" element={<LegacyInterrogateRedirect />} />
           <Route path="/result/:id" element={<LegacyResultRedirect />} />
       </Routes>
-      </div>
+      </main>
       <SiteBeianFooter />
-    </>
+    </div>
   );
 }
 

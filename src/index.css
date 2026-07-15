@@ -1605,29 +1605,39 @@
 }
 
 .site-beian-footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 40;
+  flex-shrink: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 0.35rem 0.5rem;
-  padding: 0.45rem 0.75rem calc(0.45rem + env(safe-area-inset-bottom, 0px));
+  gap: 0.35rem 0.75rem;
+  padding: 0.75rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
   line-height: 1.4;
   color: rgba(138, 143, 152, 0.72);
-  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.55));
-  pointer-events: none;
+  background: rgba(0, 0, 0, 0.35);
+  border-top: 1px solid rgba(138, 143, 152, 0.12);
+}
+
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .site-beian-footer a {
   color: rgba(138, 143, 152, 0.85);
   text-decoration: none;
-  pointer-events: auto;
   transition: color 0.2s ease;
 }
 
@@ -1637,7 +1647,6 @@
 
 .site-beian-sep {
   opacity: 0.45;
-  pointer-events: none;
 }
 
 .site-beian-psb {

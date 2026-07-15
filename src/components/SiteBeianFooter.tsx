@@ -9,6 +9,7 @@ import {
 export default function SiteBeianFooter() {
   return (
     <footer className="site-beian-footer" aria-label="网站备案信息">
+      <span>ICP备案/许可证号：</span>
       <a href={ICP_BEIAN_URL} target="_blank" rel="noopener noreferrer">
         {ICP_BEIAN_NUMBER}
       </a>

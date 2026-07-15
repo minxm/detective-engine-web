@@ -112,7 +112,7 @@ export default function AuthPage() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen relative bg-spec-black">
+      <div className="flex-1 relative bg-spec-black">
         <CinematicBackdrop />
         <LoadingScreen label={t.common.loading} />
       </div>
@@ -128,7 +128,7 @@ export default function AuthPage() {
         : 'rgba(138,143,152,0.55)';
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4 py-12 bg-spec-black overflow-hidden">
+    <div className="flex-1 relative flex items-center justify-center px-4 py-12 bg-spec-black overflow-hidden">
       <CinematicBackdrop variant="auth" />
       <ParticleBackground />
 

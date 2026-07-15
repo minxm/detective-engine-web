@@ -100,7 +100,7 @@ export default function EntryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-spec-black relative overflow-hidden flex items-center justify-center">
+    <div className="flex-1 bg-spec-black relative overflow-hidden flex items-center justify-center">
       <CinematicBackdrop variant="entry" />
       <ParticleBackground />
 
