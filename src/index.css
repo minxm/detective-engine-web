@@ -118,11 +118,11 @@
 
   .hud-label {
     @apply font-mono text-[10px] font-semibold tracking-[0.25em] uppercase;
-    color: rgba(0, 245, 255, 0.6);
+    color: rgba(0, 245, 255, 0.78);
   }
   .hud-label::before {
     content: '// ';
-    color: rgba(0, 245, 255, 0.3);
+    color: rgba(0, 245, 255, 0.48);
   }
 
   .hud-label-red {
@@ -242,12 +242,12 @@
     writing-mode: vertical-rl;
   }
 
-  .auth-side-tag-active { color: rgba(0, 245, 255, 0.42); }
-  .auth-side-tag-standby { color: rgba(196, 200, 212, 0.45); }
+  .auth-side-tag-active { color: rgba(0, 245, 255, 0.62); }
+  .auth-side-tag-standby { color: rgba(214, 219, 229, 0.68); }
 
   .hud-meta {
     @apply font-mono text-xs tracking-wider;
-    color: rgba(148, 163, 184, 0.7);
+    color: rgba(186, 196, 210, 0.84);
   }
 
   /* Persona 5 ???? */
@@ -484,17 +484,17 @@
       0 0 0 3px rgba(34, 211, 238, 0.06),
       inset 0 2px 8px rgba(0, 0, 0, 0.4);
   }
-  .hud-input::placeholder { color: rgba(100, 116, 139, 0.5); }
+  .hud-input::placeholder { color: rgba(162, 172, 186, 0.72); }
 
   .hud-password-wrap .hud-password-input { padding-right: 2.75rem; }
   .hud-password-toggle {
     @apply absolute right-0 top-0 bottom-0 flex items-center justify-center transition-colors;
     width: 2.75rem;
-    color: rgba(196, 200, 212, 0.70);
+    color: rgba(214, 219, 229, 0.82);
     z-index: 3;
   }
-  .hud-password-toggle:hover { color: rgba(0, 245, 255, 0.75); }
-  .hud-password-wrap:focus-within .hud-password-toggle { color: rgba(0, 245, 255, 0.55); }
+  .hud-password-toggle:hover { color: rgba(0, 245, 255, 0.88); }
+  .hud-password-wrap:focus-within .hud-password-toggle { color: rgba(0, 245, 255, 0.72); }
 
   /* ??????????????????????????????????????????????????????
      ?5  TABS SYSTEM
@@ -509,10 +509,10 @@
   .hud-tab {
     @apply flex items-center gap-2 px-4 py-2 text-xs font-mono font-medium whitespace-nowrap transition-all;
     border-radius: 2px;
-    color: rgba(100, 116, 139, 0.9);
+    color: rgba(162, 172, 186, 0.88);
     letter-spacing: 0.08em;
   }
-  .hud-tab:hover { color: rgba(186, 230, 253, 0.8); background: rgba(255, 255, 255, 0.02); }
+  .hud-tab:hover { color: rgba(186, 230, 253, 0.92); background: rgba(255, 255, 255, 0.02); }
   .hud-tab-active {
     @apply hud-tab;
     color: #22d3ee;
@@ -763,7 +763,7 @@
   }
   .archive-est-notice svg {
     @apply shrink-0 mt-0.5;
-    color: rgba(0, 245, 255, 0.55);
+    color: rgba(0, 245, 255, 0.72);
   }
   .archive-est-title {
     @apply font-mono text-[11px] font-semibold tracking-wide;
@@ -771,7 +771,7 @@
   }
   .archive-est-desc {
     @apply font-mono text-[10px] mt-1 tracking-wide leading-relaxed;
-    color: rgba(196, 200, 212, 0.70);
+    color: rgba(214, 219, 229, 0.82);
   }
   .archive-est-notice-ready {
     background: rgba(16, 185, 129, 0.06);
@@ -789,11 +789,11 @@
   .archive-filter-tab {
     @apply font-mono text-[10px] px-3 py-2 tracking-wider transition-all duration-200;
     clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
-    color: rgba(196, 200, 212, 0.65);
+    color: rgba(214, 219, 229, 0.78);
     box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.08);
   }
   .archive-filter-tab:hover {
-    color: rgba(0, 245, 255, 0.65);
+    color: rgba(0, 245, 255, 0.82);
     box-shadow: inset 0 0 0 1px rgba(0, 245, 255, 0.2);
   }
   .archive-filter-tab-active {
@@ -1132,7 +1132,7 @@
   .room-entry    { --room-accent: #E50914; --room-secondary: #111820; }
   .room-auth     { --room-accent: #00F5FF; --room-secondary: #0B0F14; }
   .room-lobby    { --room-accent: #00F5FF; --room-secondary: #0B0F14; }
-  .room-archive  { --room-accent: #8A8F98; --room-secondary: #1a1610; }
+  .room-archive  { --room-accent: #A2A8B4; --room-secondary: #1a1610; }
   .room-open     { --room-accent: #c4a574; --room-secondary: #1a1812; }
   .room-evidence { --room-accent: #E50914; --room-secondary: #0B0F14; }
   .room-forensics{ --room-accent: #00F5FF; --room-secondary: #0B0F14; }
@@ -1658,8 +1658,34 @@
 
 .site-beian-psb img {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
   object-fit: contain;
 }
+
+/* ── Text contrast tuning on #0B0F14 (micro-bump opacity + brighter gray base) ── */
+.text-spec-gray\/20 { color: rgb(214 219 229 / 0.38); }
+.text-spec-gray\/25 { color: rgb(214 219 229 / 0.44); }
+.text-spec-gray\/30 { color: rgb(214 219 229 / 0.50); }
+.text-spec-gray\/35 { color: rgb(214 219 229 / 0.56); }
+.text-spec-gray\/40 { color: rgb(214 219 229 / 0.62); }
+.text-spec-gray\/45 { color: rgb(214 219 229 / 0.68); }
+.text-spec-gray\/50 { color: rgb(214 219 229 / 0.74); }
+.text-spec-gray\/55 { color: rgb(214 219 229 / 0.78); }
+.text-spec-gray\/60 { color: rgb(214 219 229 / 0.82); }
+.text-spec-gray\/70 { color: rgb(214 219 229 / 0.88); }
+.text-spec-gray\/75 { color: rgb(214 219 229 / 0.90); }
+.text-spec-gray\/80 { color: rgb(214 219 229 / 0.92); }
+.text-spec-gray\/85 { color: rgb(214 219 229 / 0.94); }
+.hover\:text-spec-gray\/70:hover { color: rgb(214 219 229 / 0.88); }
+
+.text-spec-cyan\/30 { color: rgb(0 245 255 / 0.58); }
+.text-spec-cyan\/40 { color: rgb(0 245 255 / 0.66); }
+.text-spec-cyan\/45 { color: rgb(0 245 255 / 0.70); }
+.text-spec-cyan\/50 { color: rgb(0 245 255 / 0.74); }
+.text-spec-cyan\/55 { color: rgb(0 245 255 / 0.78); }
+.text-spec-cyan\/60 { color: rgb(0 245 255 / 0.82); }
+.text-spec-cyan\/70 { color: rgb(0 245 255 / 0.88); }
+.text-spec-cyan\/80 { color: rgb(0 245 255 / 0.92); }
+.hover\:text-spec-cyan\/70:hover { color: rgb(0 245 255 / 0.88); }

@@ -17,7 +17,7 @@ export default {
           navy: '#111820',
           red: '#E50914',
           cyan: '#00F5FF',
-          gray: '#C4C8D4',
+          gray: '#D6DBE5',
           amber: '#F59E0B',
           gold: '#D4A853',
         },

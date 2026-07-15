@@ -5,7 +5,7 @@ export const colors = {
   red: '#E50914',
   cyan: '#00F5FF',
   white: '#FFFFFF',
-  gray: '#8A8F98',
+  gray: '#A2A8B4',
 } as const;
 
 export const slant = { title: '-6deg', panel: '-3deg' } as const;

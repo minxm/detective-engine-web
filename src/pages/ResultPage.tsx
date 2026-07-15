@@ -21,7 +21,7 @@ const RANK_META: Record<string, { color: string; glow: string; label: string; bg
   S: { color: '#E50914', glow: 'rgba(229,9,20,0.7)', label: 'SUPREME · 完美侦破', bg: 'rgba(229,9,20,0.06)' },
   A: { color: '#00F5FF', glow: 'rgba(0,245,255,0.6)', label: 'EXCELLENT · 出色表现', bg: 'rgba(0,245,255,0.04)' },
   B: { color: '#D4A853', glow: 'rgba(212,168,83,0.6)', label: 'GOOD · 良好发挥', bg: 'rgba(212,168,83,0.04)' },
-  C: { color: '#8A8F98', glow: 'rgba(138,143,152,0.5)', label: 'AVERAGE · 基本完成', bg: 'rgba(138,143,152,0.04)' },
+  C: { color: '#A2A8B4', glow: 'rgba(162,168,178,0.65)', label: 'AVERAGE · 基本完成', bg: 'rgba(162,168,178,0.06)' },
   D: { color: '#555', glow: 'rgba(80,80,80,0.4)', label: 'FAILED · 调查失败', bg: 'rgba(80,80,80,0.04)' },
 };
 

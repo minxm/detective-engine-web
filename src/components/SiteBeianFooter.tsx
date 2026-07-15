@@ -19,7 +19,7 @@ export default function SiteBeianFooter() {
         rel="noopener noreferrer"
         className="site-beian-psb"
       >
-        <img src={PSB_BEIAN_ICON_URL} alt="" width={20} height={20} loading="lazy" />
+        <img src={PSB_BEIAN_ICON_URL} alt="" width={14} height={14} loading="lazy" />
         {PSB_BEIAN_NUMBER}
       </a>
     </footer>

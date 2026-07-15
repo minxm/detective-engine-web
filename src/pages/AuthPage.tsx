@@ -29,7 +29,7 @@ const LEFT_TAGS = [
 
 function StatusDot({ phase }: { phase: 'idle' | 'scanning' | 'verified' }) {
   const color =
-    phase === 'verified' ? '#00F5FF' : phase === 'scanning' ? '#E50914' : 'rgba(138,143,152,0.55)';
+    phase === 'verified' ? '#00F5FF' : phase === 'scanning' ? '#E50914' : 'rgba(162,168,178,0.78)';
   const glow =
     phase === 'scanning'
       ? '0 0 8px rgba(229,9,20,0.8)'
