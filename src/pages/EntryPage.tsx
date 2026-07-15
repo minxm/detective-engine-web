@@ -113,7 +113,7 @@ export default function EntryPage() {
         style={{ background: '#000' }}
       />
       <motion.div
-        className="fixed bottom-0 inset-x-0 z-[80] pointer-events-none"
+        className="fixed bottom-0 inset-x-0 z-[60] pointer-events-none"
         initial={{ height: '80px' }}
         animate={{ height: phase === 'ready' ? '56px' : '80px' }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
