@@ -1618,7 +1618,7 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
   line-height: 1.5;
-  color: #d1d5db;
+  color: #d6dbe5ad;
   background: #0b0f14;
   border-top: 1px solid rgba(156, 163, 175, 0.35);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.45);
@@ -1641,7 +1641,7 @@
 
 .site-beian-label,
 .site-beian-footer a {
-  color: #e5e7eb;
+  color: #d6dbe5ad;
   text-decoration: none;
   transition: color 0.2s ease;
 }
