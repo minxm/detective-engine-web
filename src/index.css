@@ -1642,17 +1642,12 @@
 .site-beian-label,
 .site-beian-footer a {
   color: #e5e7eb;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .site-beian-footer a:hover {
   color: #67e8f9;
-}
-
-.site-beian-sep {
-  color: #9ca3af;
 }
 
 .site-beian-psb {
@@ -1661,7 +1656,10 @@
   gap: 0.35rem;
 }
 
-.site-beian-psb-icon {
+.site-beian-psb img {
   display: block;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
+  object-fit: contain;
 }
