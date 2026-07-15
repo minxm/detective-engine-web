@@ -5,6 +5,7 @@ import CinematicBackdrop from '@/components/CinematicBackdrop';
 import CursorGlow from '@/components/hud/CursorGlow';
 import CrtOverlay from '@/components/hud/CrtOverlay';
 import ScrollToTop from '@/components/ScrollToTop';
+import SiteBeianFooter from '@/components/SiteBeianFooter';
 import EntryPage from '@/pages/EntryPage';
 import AuthPage from '@/pages/AuthPage';
 import LobbyPage from '@/pages/LobbyPage';
@@ -76,6 +77,7 @@ function AppRoutes() {
           <Route path="/result/:id" element={<LegacyResultRedirect />} />
       </Routes>
       </div>
+      <SiteBeianFooter />
     </>
   );
 }
