@@ -45,7 +45,7 @@ function AppRoutes() {
       {!hideChrome && <CursorGlow />}
       {showHeader && <AppHeader />}
       <ScrollToTop />
-      <main className={`app-main${showHeader ? ' game-header-offset' : ''}`}>
+      <main className={`app-main${showHeader ? ' game-header-offset' : ''}${isInterrogateChat ? ' app-main-interrogate' : ''}`}>
       <Routes>
           {/* 全局流程 */}
           <Route path="/" element={<EntryPage />} />
@@ -77,7 +77,7 @@ function AppRoutes() {
           <Route path="/result/:id" element={<LegacyResultRedirect />} />
       </Routes>
       </main>
-      <SiteBeianFooter />
+      {!isInterrogateChat && <SiteBeianFooter />}
     </div>
   );
 }

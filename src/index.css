@@ -1395,16 +1395,23 @@
   }
 
   .interrogate-chat-page {
-    height: 100dvh;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   .interrogate-chat-top {
-    position: sticky;
-    top: 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 50;
   }
   .interrogate-chat-footer {
-    position: sticky;
-    bottom: 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 50;
   }
 
   .game-header::before {
@@ -1637,6 +1644,15 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+}
+
+/* 审讯聊天：主区域吃满视口，仅消息区滚动，顶部/输入栏保持固定 */
+.app-main-interrogate {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
 }
 
 .site-beian-label,

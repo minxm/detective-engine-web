@@ -128,11 +128,11 @@ export default function InterrogatePage() {
   }
 
   return (
-    <div className="interrogate-chat-page relative page-shell flex flex-col bg-hud-void">
+    <div className="interrogate-chat-page relative page-shell bg-hud-void">
       <CinematicBackdrop />
       <ParticleBackground />
 
-      <div className="interrogate-chat-top shrink-0 relative z-50">
+      <div className="interrogate-chat-top">
         <header className="relative">
           <div className="absolute inset-0 bg-hud-void/90 backdrop-blur-xl border-b border-cyan-500/10" />
           <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent" />
