@@ -132,13 +132,8 @@ export default function ReconstructionPage() {
 }
 
 async function fetchCaseDataAndScore(caseId: string, deduction: string, displayName: string) {
-  const { loadCaseData } = await import('@/utils/case-store');
-  const { fetchCaseById } = await import('@/services/case');
-  let caseData = await loadCaseData(caseId);
-  if (!caseData) {
-    const res = await fetchCaseById(caseId);
-    caseData = res.caseData;
-  }
+  const { resolveCaseData } = await import('@/utils/resolve-case-data');
+  const caseData = await resolveCaseData(caseId);
   if (!caseData) throw new Error(t.case.notFound);
   const progress = getProgress(caseId);
   return scoreCase({

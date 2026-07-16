@@ -10,18 +10,16 @@ import CinematicBackdrop from '@/components/CinematicBackdrop';
 import { CharacterPortrait } from '@/components/CharacterPortrait';
 import InterrogationHud from '@/components/rooms/InterrogationHud';
 import LoadingScreen from '@/components/ui/LoadingScreen';
-import { fetchCaseById, interrogateSuspect } from '@/services/case';
+import { interrogateSuspect } from '@/services/case';
 import {
   findSuspectByParam,
   getInterrogation,
   getProgress,
   getSuspectId,
-  loadCaseData,
-  normalizeCaseData,
-  saveCaseData,
   saveInterrogation,
   saveProgress,
 } from '@/utils/case-store';
+import { resolveCaseData } from '@/utils/resolve-case-data';
 import { canAccessFlowStep } from '@/utils/case-flow';
 import { t } from '@/i18n/zh';
 import type { CaseData, InterrogationMessage, Suspect } from '@/types';
@@ -48,16 +46,7 @@ export default function InterrogatePage() {
     }
     let cancelled = false;
     (async () => {
-      let data = await loadCaseData(id);
-      if (!data) {
-        try {
-          const res = await fetchCaseById(id);
-          data = normalizeCaseData(res.caseData);
-          if (data) await saveCaseData(data);
-        } catch {
-          data = null;
-        }
-      }
+      const data = await resolveCaseData(id);
       if (cancelled) return;
       if (!data) { setPageError(t.interrogate.noCase); return; }
       if (!suspectId) { navigate(`/case/${id}/interrogate`, { replace: true }); return; }

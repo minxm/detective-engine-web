@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchCaseById } from '@/services/case';
-import { getProgress, loadCaseData, saveCaseData, scrollWindowToTop } from '@/utils/case-store';
+import { getProgress, scrollWindowToTop } from '@/utils/case-store';
+import { resolveCaseData } from '@/utils/resolve-case-data';
 import { canAccessFlowStep, CASE_FLOW_PATHS, initCaseProgress } from '@/utils/case-flow';
 import type { CaseData, CaseFlowStep } from '@/types';
 
@@ -14,16 +14,7 @@ export function useCaseLoader(caseId: string, requiredStep?: CaseFlowStep) {
     scrollWindowToTop();
     let cancelled = false;
     (async () => {
-      let data = await loadCaseData(caseId);
-      if (!data) {
-        try {
-          const res = await fetchCaseById(caseId);
-          data = res.caseData;
-          if (data) await saveCaseData(data);
-        } catch {
-          data = null;
-        }
-      }
+      const data = await resolveCaseData(caseId);
       if (cancelled) return;
       if (!data) {
         setLoading(false);

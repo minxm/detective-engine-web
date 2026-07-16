@@ -21,16 +21,14 @@ import LoadingScreen from '@/components/ui/LoadingScreen';
 import HudPanel from '@/components/hud/HudPanel';
 import HudButton from '@/components/hud/HudButton';
 import RoomAtmosphere from '@/components/rooms/RoomAtmosphere';
-import { fetchCaseById } from '@/services/case';
 import { fetchHistoryItem } from '@/services/history';
 import {
   getProgress,
-  loadCaseData,
   loadEvaluation,
   resetCaseProgress,
-  saveCaseData,
   scrollWindowToTop,
 } from '@/utils/case-store';
+import { resolveCaseData } from '@/utils/resolve-case-data';
 import { resolveAssetUrl } from '@/utils/asset-url';
 import { t } from '@/i18n/zh';
 import type { CaseData, CaseEvaluation, Evidence, HistoryEntry, Suspect } from '@/types';
@@ -244,16 +242,7 @@ export default function CaseArchivePage() {
     scrollWindowToTop();
     let cancelled = false;
     (async () => {
-      let data = await loadCaseData(id);
-      if (!data) {
-        try {
-          const res = await fetchCaseById(id);
-          data = res.caseData;
-          if (data) await saveCaseData(data);
-        } catch {
-          data = null;
-        }
-      }
+      const data = await resolveCaseData(id);
       const evalData = loadEvaluation(id);
       let entry: HistoryEntry | null = null;
       try {

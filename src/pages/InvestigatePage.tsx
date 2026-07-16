@@ -11,8 +11,9 @@ import HudButton from '@/components/hud/HudButton';
 import HudTabs from '@/components/hud/HudTabs';
 import { HudTextarea } from '@/components/hud/HudInput';
 import BackButton from '@/components/BackButton';
-import { fetchCaseById, scoreCase } from '@/services/case';
-import { getProgress, getSuspectId, loadCaseData, saveProgress } from '@/utils/case-store';
+import { scoreCase } from '@/services/case';
+import { getProgress, getSuspectId, saveProgress } from '@/utils/case-store';
+import { resolveCaseData } from '@/utils/resolve-case-data';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { useCaseStore } from '@/utils/case-store';
 import { t } from '@/i18n/zh';
@@ -35,15 +36,7 @@ export default function InvestigatePage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      let data = await loadCaseData(id);
-      if (!data) {
-        try {
-          const res = await fetchCaseById(id);
-          data = res.caseData;
-        } catch {
-          data = null;
-        }
-      }
+      const data = await resolveCaseData(id);
       if (cancelled || !data) return;
       setCaseData(data);
       const progress = getProgress(id);

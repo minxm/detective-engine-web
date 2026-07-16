@@ -8,7 +8,7 @@ import DataStreamBar from '@/components/hud/DataStreamBar';
 import CinematicBackdrop from '@/components/CinematicBackdrop';
 import RoomAtmosphere from '@/components/rooms/RoomAtmosphere';
 import { fetchCaseById, fetchCaseStatus } from '@/services/case';
-import { loadCaseData, saveCaseData, scrollWindowToTop } from '@/utils/case-store';
+import { saveCaseData, scrollWindowToTop } from '@/utils/case-store';
 import { parseGeneratingError } from '@/utils/generatingError';
 import {
   GENERATING_ASSIGN_JOB_ID,
@@ -89,11 +89,8 @@ export default function GeneratingPage() {
       try {
         let caseData = instantPayload?.caseData ?? null;
         if (!caseData) {
-          caseData = await loadCaseData(instantCaseId);
-        }
-        if (!caseData) {
-          const res = await fetchCaseById(instantCaseId);
-          caseData = res.caseData;
+          const { resolveCaseData } = await import('@/utils/resolve-case-data');
+          caseData = await resolveCaseData(instantCaseId);
         }
         if (!caseData) {
           setError(t.generating.loadFail);
