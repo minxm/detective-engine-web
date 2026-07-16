@@ -2,6 +2,7 @@
  * 解析案件图片地址：
  * - /api/blobs/... 同源代理路径原样保留（生产由 EdgeOne 反代到 API）
  * - 开发环境下把绝对 /blobs 地址改成相对路径，便于 Vite 代理
+ * - 若误拿到 cloud:// fileID，改走 /api/blobs 代理（正常应由服务端签发临时链）
  * - CloudBase 直连地址原样透传
  */
 export function resolveAssetUrl(url?: string): string | undefined {
@@ -10,6 +11,12 @@ export function resolveAssetUrl(url?: string): string | undefined {
 
   if (trimmed.startsWith('/api/blobs/') || trimmed.startsWith('/blobs/')) {
     return trimmed;
+  }
+
+  if (trimmed.startsWith('cloud://')) {
+    const match = trimmed.match(/cloud:\/\/[^/]+\/(?:case-images\/)?(cases\/[^?#]+)/i);
+    if (!match) return undefined;
+    return `/api/blobs/${match[1].split('/').map(encodeURIComponent).join('/')}`;
   }
 
   try {
